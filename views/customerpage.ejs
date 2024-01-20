@@ -1,0 +1,228 @@
+<%- include('partials/header'); -%>
+<div class="customerpage">
+    <nav>
+        <div class="nav-wrapper z-depth-5">
+            <a href="#" class="brand-logo light-green-text">Shanti SMS</a>
+            <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+             <li><a class="light-green-text" href='#' id="loggedInUserDetails" data-user-id="<%= user._id %>"><%= `Welcome, ${user.fullName}` %></a></li> <!-- data-user-whatsappNumber="<%- user.connectedWhatsappNo %>" -->
+            <li><a class="light-green-text dropdown-trigger" href='#' data-target='dropdown1'>Components</a></li>
+            <li><a class="waves-effect waves-light black-text">
+            </a></li>
+            <li><a class="btn red light-green-text z-depth-5" href="/logout">Log Out</a></li>
+          </ul>
+        </div>
+      </nav>
+     <div id="messageListDiv" style="display: none;"> <!-- change it to the block in prod -->
+       <div class="container" style="margin-top: 30px;"> <!--margin-top: 30px; width: fit-content; -->
+        <table class="centered responsive-table z-depth-5">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Sent To</th>
+              <th>Contents</th>
+              <th>Media</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (messageLogs !='' ) { %>
+              <% messageLogs.forEach((elem, index)=> { %>
+        <tbody>
+          <tr>
+            <td>
+              <%= elem.timeStamp.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }); %>
+            </td>
+            <td>
+              <%= elem.sentTo %>
+            </td>
+            <td>
+              <%= elem.content %>
+            </td>
+            <td>
+              <%= elem.media %>
+            </td>
+            <td>
+              <%= elem.status %>
+            </td>
+          </tr>
+          </tbody>
+          <% }) %>
+          <% } else { %>
+            <!-- <>Couldn't find users in Database</h3> -->
+              <% } %>  
+        </table>
+      </div>
+    </div>
+
+    <div id="connectedWaListDiv" style="display: block;">
+      <div class="container" style="margin-top: 30px;"> <!--margin-top: 30px; width: fit-content; -->
+        
+       <table class="centered responsive-table z-depth-5">
+         <thead>
+           <tr>
+             <th>Connected Whatsapp No</th>
+             <th>Status</th>
+             <th>Disconnect</th>
+             <th><button href="#qrCodeGenerateModal" class="red btn z-depth-5 modal-trigger">New</button></th>
+           </tr>
+         </thead>
+           <% if (user != '') { %>
+            <% user.connectedWhatsAppDevices.forEach((elem, index)=> { %>
+              <tbody>
+         <tr>
+           <td>
+             <%= elem.connectedWano %>
+           </td>
+           <td>
+             <%= "Connected" %>
+           </td>
+           <td id="<%= elem.connectedWano %>" data-connectedwano="<%= elem.connectedWano %>"><i href="#disConnConfModal" class="material-icons modal-trigger deleteWhConfirmation">delete_sweep</i></td>
+         </tr>
+         </tbody>
+         <% }) %>
+         <% } else %>
+       </table>
+     </div>
+   </div>
+
+</div>
+
+<!-- Components -->
+
+<!-- Dropdown Structure -->
+<ul id='dropdown1' class='dropdown-content'>
+  <!-- <li><a class="light-green-text" id="qrCodeGenerateBtn">Connecte New Whatsapp Account</a></li> -->
+  <li><a class="light-green-text" id="whatsappStatusBtn">Whatsapp Accounts</a></li>
+  <li><a class="light-green-text" id="showMessagelogs">Message logs</a></li>
+    <!-- <li class="divider" tabindex="-1"></li>
+    <li><a class="light-green-text" href="#!">Provision 1</a></li>
+    <li><a class="light-green-text" href="#!">Prov 2</a></li>
+    <li><a class="light-green-text" href="#!">Prov 3</a></li> -->
+  </ul>
+
+
+  <!-- DISCONNECT CURRENT WHATSAPP CONFIRMATION MODAL -->
+  <div id="disConnConfModal" class="modal z-depth-5">
+      <div class="modal-content">
+        <h4 class="center light-green-text">Are you sure about disconnecting below number ?</h4>
+        <form id="disConnCurrWaNoForm">
+        <div class="row">
+          <div class="input-field col s12 center">
+          <h4 id="disConnConfNoDisplay" class="center light-green-text"></h4>
+          <div class="center-align">
+            <button id="disconnectWhatsappBtn" class="waves-effect waves-light btn red" style="margin-top: 2%;">Yes, Disconnect</button>
+          </div>
+        </div>
+        </div>
+      </form>
+      </div>
+      </div>
+
+      <div id="qrCodeGenerateModal" class="modal z-depth-5">
+    <div class="modal-content">
+      <h4 class="center" id="titleForQrCodeModal">Generate QR Code to connect New Whatsapp.</h4>
+        <form class="col s12" id="connectWhatsappForm">
+          <div class="center-align">
+          <button id="qrCodeGenerateBtn" class="waves-effect waves-light btn red">Generate</button>
+        </div>
+        </form>
+        <div id="qrcode-container" class="center">
+          <div class="row" style="margin-top: 30px;">
+            <div class="col s12 center" id="newQRCodeContainer">
+              <!-- qr code image places here -->
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+
+    const generateQrCodeForm = document.querySelector('#connectWhatsappForm');
+    const loggedInUserDetails = document.querySelector('#loggedInUserDetails');
+    const qrCodeGenerateBtn = document.querySelector('#qrCodeGenerateBtn');
+    const customerId = loggedInUserDetails.getAttribute('data-user-id');
+    let qrcodeContainer = document.querySelector('#newQRCodeContainer');
+    let titleForQrCodeModal = document.querySelector('#titleForQrCodeModal');
+    const socket = io();
+
+    const whatsappConnectionStatusBtn = document.querySelector('#whatsappStatusBtn');
+    whatsappConnectionStatusBtn.addEventListener('click', () => {
+      document.querySelector('#connectedWaListDiv').style.display = 'block';
+      document.querySelector('#messageListDiv').style.display = 'none';
+    });
+
+    const showMessagelogs = document.querySelector('#showMessagelogs');
+    showMessagelogs.addEventListener('click', () => {
+      document.querySelector('#connectedWaListDiv').style.display = 'none';
+      document.querySelector('#messageListDiv').style.display = 'block';
+    });
+
+    generateQrCodeForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        let elem = document.querySelector('#qrCodeGenerateModal');
+        M.Modal.init();
+        let instance = M.Modal.getInstance(elem);
+        instance.open();
+        qrCodeGenerateBtn.style.display = 'none';
+        titleForQrCodeModal.innerHTML = 'Generating QR Code..., Please be ready with whatsapp QR code scanner.';
+        socket.emit('generateQrCode', customerId);
+    });
+
+  socket.on('qrCodeGenerated', (data) => {
+    console.log(data);
+    let div = `
+              <img src="${data}" alt="QR Code" style="width: 40%; height: 40%;" />
+          `;
+        qrcodeContainer.innerHTML = div;
+        titleForQrCodeModal.innerHTML = 'Please scan below QR Code';
+  });
+
+  socket.on('ClientIsReady', () => {
+     qrcodeContainer.innerHTML = `<img src="" alt="QR Code" style="width: 40%; height: 40%;" />`;
+    // Initialize the modal properly
+    let whatsappConnectionStatusModal = document.querySelector('#qrCodeGenerateModal');
+    let instance = M.Modal.init(whatsappConnectionStatusModal);
+    instance.close();
+    location.assign('/customerpage');
+  });
+
+
+  // DISCONNECT WHATSAPP
+  // INJECT WHATSAPP NUMBER TO THE MODAL
+  const disconnectWhatsappConfModalBtn = document.querySelectorAll('.deleteWhConfirmation');
+  disconnectWhatsappConfModalBtn.forEach(elem => {
+    elem.addEventListener('click', function (event) {
+      event.preventDefault();
+      const selectedWaNo = this.parentNode.dataset.connectedwano;
+      const disConnConfModal = M.Modal.getInstance(document.querySelector('#disConnConfModal'));
+      const disConnConfNoDisplaySpaceHolder = document.querySelector('#disConnConfNoDisplay');
+      disConnConfNoDisplaySpaceHolder.innerText = selectedWaNo;
+    });
+  });
+
+
+  const disconnectWhatsappBtn = document.querySelector('#disConnCurrWaNoForm');
+  disconnectWhatsappBtn.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const waNo = document.querySelector('#disConnConfNoDisplay').innerText;
+    try {
+      const res = await fetch('/deleteConnectedwhatsapp', {
+        method: 'POST',
+          body: JSON.stringify({ customerId, waNo }),
+          headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await res.json();
+      if (data.message === 'Client Destroyed Successfully') {
+        location.assign('/customerpage');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+
+  </script>
+<%- include('partials/footer'); -%>

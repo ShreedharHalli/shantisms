@@ -1,0 +1,179 @@
+<%- include('partials/header'); -%>
+<nav>
+  <div class="nav-wrapper z-depth-5">
+    <a href="#" class="brand-logo light-green-text">Shanti SMS</a>
+    <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+    <ul id="nav-mobile" class="right hide-on-med-and-down">
+      <li><a class="light-green-text" href="badges.html">Blog</a></li>
+      <li><a class="light-green-text" href="badges.html">About Us</a></li>
+      <li><a class="light-green-text" href="badges.html">Contact Us</a></li>
+      <li><a class="light-green-text modal-trigger btn red" href="#loginModal">Login</a></li>
+    </ul>
+  </div>
+</nav>  
+<div class="homePageForBiggerDevices hide-on-small-only">
+    
+    <div class="row slogan">
+      <div class="col s12 m6">
+        <h5>At Shanti SMS, </br>
+          We provide fast & reliable bulk SMS & whatsapp broadcasting service.</h5>
+      </div>
+    </div>
+    <div class="servicesForDesktop">
+      <h2 class="center-align">Services We Provide</h2>
+      <div class="">
+        <div class="row">
+          <div class="col s12 m4">
+            <div class="card blue-grey darken-4 darken-1 z-depth-5">
+              <div class="card-content light-green-text">
+                <span class="card-title">Service 1</span>
+                <p>Details 1</p>
+              </div>
+              <div class="card-action">
+                <a href="#">Know More</a>
+                <a href="#">Buy API</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col s12 m4">
+            <div class="card blue-grey darken-4 z-depth-5">
+              <div class="card-content light-green-text">
+                <span class="card-title">Service 2</span>
+                <p>Details 2</p>
+              </div>
+              <div class="card-action">
+                <a href="#">Know More</a>
+                <a href="#">Buy Service</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col s12 m4">
+            <div class="card blue-grey darken-4 z-depth-5">
+              <div class="card-content light-green-text">
+                <span class="card-title">Service 3</span>
+                <p>Details 3</p>
+              </div>
+              <div class="card-action">
+                <a href="#">Know More</a>
+                <a href="#">Buy Service</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col s12 m4">
+            <div class="card blue-grey darken-4 z-depth-5">
+              <div class="card-content light-green-text">
+                <span class="card-title">Service 4</span>
+                <p>Details 4</p>
+              </div>
+              <div class="card-action">
+                <a href="#">Know More</a>
+                <a href="#">Contact Developer</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col s12 m4">
+            <div class="card blue-grey darken-4 z-depth-5">
+              <div class="card-content light-green-text">
+                <span class="card-title">Service 5</span>
+                <p>Details 5</p>
+              </div>
+              <div class="card-action">
+                <a href="#">Know More</a>
+                <a href="#">Contact Developer</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col s12 m4">
+            <div class="card blue-grey darken-4 z-depth-5">
+              <div class="card-content light-green-text">
+                <span class="card-title">Service 6</span>
+                <p>Details 6</p>
+              </div>
+              <div class="card-action">
+                <a href="#">Know More</a>
+                <a href="#">Contact Developer</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+
+  
+  <!-- LOGIN MODAL -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <h4 class="center">Log In</h4>
+      <div class="row">
+        <form class="col s12" id="loginForm">
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="email" id="email" type="email" class="validate white-text" required>
+              <label for="email">Email</label>
+              <div class="email-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="password" id="password" type="password" class="validate white-text" required>
+              <label for="password">Password</label>
+              <div class="password-error"></div>
+            </div>
+          </div>
+          <button class="waves-effect waves-light btn red center">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+
+    const loginForm = document.querySelector('#loginForm');
+    let emailError = document.querySelector('.email-error');
+    let passwordError = document.querySelector('.password-error');
+
+    loginForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+    emailError.textContent = ''; 
+    passwordError.textContent = '';
+    const email = loginForm.email.value;
+    const password = loginForm.password.value;
+
+      try {
+        const res = await fetch('/login', {
+          method: 'POST',
+          body: JSON.stringify({ email, password}),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        if (data.errors) {
+          emailError.textContent = data.errors.email;
+          passwordError.textContent = data.errors.password;
+        }
+        if (data.user) {
+          if (data.email === 'admin@shantisms.com') {
+                location.assign('/adminpage');    
+            } else {
+            location.assign('/customerpage');
+        }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+  </script>
+
+  <%- include('partials/footer'); -%>

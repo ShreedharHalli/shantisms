@@ -1,0 +1,462 @@
+<%- include('partials/header'); -%>
+<div class="adminPage">
+<nav>
+    <div class="nav-wrapper z-depth-5">
+        <a href="#" class="brand-logo light-green-text">Shanti SMS</a>
+        <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li><a class="light-green-text" href='#'><%= `Welcome, ${user.fullName}` %></a></li>
+        <li><a class="light-green-text dropdown-trigger" href='#' data-target='dropdown1'>Components</a></li>
+        <li><a class="waves-effect waves-light black-text">
+        </a></li>
+        <li><a class="btn red light-green-text z-depth-5" href="/logout">Log Out</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container" style="margin-top: 30px; width: fit-content;">
+  <table class="centered responsive-table z-depth-5">
+    <thead>
+      <tr>
+        <th>User Name</th>
+          <th>Email</th>
+          <th>SMS User Name</th>
+          <th>SMS Key</th>
+          <th>Acc Usage</th>
+          <th>Entity ID</th>
+          <th>Whatsapp Customer ID</th>
+          <th>Connected Whatsapp No</th>
+          <th>Balance Credits</th>
+          <th>Issue Credits</th>
+          <th>Delete User</th>
+          <th><a href="#createNewCustomerModal" class="btn-floating btn-large waves-effect waves-light red modal-trigger"><i class="material-icons">person_add</i></a></th>
+          <!-- <th><button href="#qrCodeGenerateModal" class="red btn z-depth-5 modal-trigger">New</button></th> -->
+      </tr>
+    </thead>
+        <% if (userListForAdmin !='' ) { %>
+          <% userListForAdmin.forEach((elem, index)=> { %>
+            <tbody>
+              <tr>
+                <td>
+                  <%= elem.fullName %>
+                </td>
+                <td>
+                  <%= elem.email %>
+                </td>
+                <td>
+                  <%= elem.smsUserName %>
+                </td>
+                <td>
+                  <%= elem.smsKey %>
+                </td>
+                <td>
+                  <%= elem.smsAccUsg %>
+                </td>
+                <td>
+                  <%= elem.entityId %>
+                </td>
+                <td>
+                  <%= elem._id %>
+                </td>
+  
+                <% 
+                        // Initialize an empty array to store the connectedWano values
+                        const connectedWanoArr = [];
+  
+                        if (elem.connectedWhatsAppDevices.length > 0) { 
+                          // Loop through each devices object and push connectedWano value into the array
+                          elem.connectedWhatsAppDevices.forEach((devices, index) => { 
+                            connectedWanoArr.push(devices.connectedWano);
+                          });
+                        } 
+                        %>
+  
+                        <% 
+                        // Check if the connectedWanoArr is not empty
+                        if (connectedWanoArr.length > 0) { 
+                        %>
+                          <td>
+                            <!-- Display the connectedWanoArr as a comma-separated list -->
+                            <%= connectedWanoArr.join(', ') %>
+                          </td>
+                        <% } else { %>
+                          <td>
+                            <!-- Display 0 if the connectedWanoArr is empty -->
+                            <%= 0 %>
+                          </td>
+                        <% } %>
+                
+                            
+                          <td>
+                            <%= elem.AvailableCredits %>
+                          </td>
+                          <td id="<%= elem._id %>"><i href="#issueCreditsToCustomerModal"
+                              class="material-icons issueCreditsBtn modal-trigger">add_shopping_cart</i></td>
+  
+                          <td id="<%= elem._id %>" data-fullname="<%= elem.fullName %>"><i href="#deleteCustomerModal"
+                              class="material-icons deleteCustomerBtn modal-trigger">delete_sweep</i></td>
+                                      </tr>
+                                    </tbody>
+                                    <% }) %>
+  
+                            <% } else { %>
+  
+                              <h5>Couldn't find users in Database</h3>
+                                <% } %> 
+  </table>
+    
+
+</div>
+
+<!-- Dropdown Structure -->
+<ul id='dropdown1' class='dropdown-content'>
+    <li><a href="#createNewCustomerModal" class="modal-trigger">Create New Customer</a></li>
+    <li><a id="showCreditsBtn" href="#showCreditsModal" class="modal-trigger">Show Available Credits</a></li>
+    <li class="divider" tabindex="-1"></li>
+    <li><a href="#!">three</a></li>
+    <li><a href="#!">four</a></li>
+    <li><a href="#!">five</a></li>
+  </ul>
+
+  
+  <!-- CREATE NEW CUSTOMER MODAL -->
+  <div id="createNewCustomerModal" class="modal">
+    <div class="modal-content">
+      <h4 class="center">Create New Customer</h4>
+      <div class="row">
+        <form class="col s12" id="createNewCustomerForm">
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="fullName" id="fullName" type="text" class="validate white-text" required>
+              <label for="fullName">Full Name</label>
+              <div class="fullname-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="email" id="email" type="email" class="validate white-text" required>
+              <label for="email">Email</label>
+              <div class="email-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="password" id="password" type="password" class="validate white-text" required>
+              <label for="password">Password</label>
+              <div class="password-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="smsUserName" id="smsUserName" type="text" class="validate white-text" required>
+              <label for="smsUserName">SMS User Name</label>
+              <div class="fullname-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="smsKey" id="smsKey" type="text" class="validate white-text" required>
+              <label for="smsKey">SMS Key</label>
+              <div class="fullname-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="smsAccUsg" id="smsAccUsg" type="text" class="validate white-text" required>
+              <label for="smsAccUsg">Acc Usage</label>
+              <div class="fullname-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="entityId" id="entityId" type="text" class="validate white-text" required>
+              <label for="entityId">Entity Id</label>
+              <div class="fullname-error"></div>
+            </div>
+          </div>
+          <button class="waves-effect waves-light btn red center">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  
+
+  <!-- ISSUE CREDITS MODAL -->
+  <div id="issueCreditsToCustomerModal" class="modal">
+    <div class="modal-content">
+      <h4 class="center">Issue Credits</h4>
+      <div class="row">
+        <form class="col s12" id="issueCreditsToCustomerForm">
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="issueCredits" id="issueCredits" type="text" class="validate white-text" required>
+              <label for="issueCredits">Credits</label>
+            </div>
+          </div>
+          <div class="row" style="display: none;">
+            <div>
+              <input name="customerID" id="customerID" type="text">
+            </div>
+          </div>
+          <h5 id="numberError" class="red-text" style="display: none;">Please enter valid numbers</h5>
+          <button class="waves-effect waves-light btn red center">Submit</button>
+        </form>
+      </div>
+      <h6 id="insufficientCreditsErrorMsg" class="red-text" style="display: none;">Insufficient credits available in your account.</h6>
+    </div>
+  </div>
+
+  
+
+  <!-- DELETE CUSTOEMR MODAL -->
+  <div id="deleteCustomerModal" class="modal red lighten-5">
+    <div class="modal-content">
+      <h4 class="center">Are you sure about deleting below customer ?</h4>
+      <div class="row">
+        <form class="col s12" id="deleteCustomerForm">
+          <div class="row">
+            <div class="input-field col s12 center">
+              <h5 id="deleteCustomerDislayName"></h5>
+            </div>
+          </div>
+          <button class="waves-effect waves-light btn red center">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  
+ <!-- SHOW CREDITS MODAL -->
+ <div id="showCreditsModal" class="modal">
+  <div class="modal-content">
+    <div class="row">
+      <div class="col l6">
+        <div class="card blue-grey darken-1 z-depth-5">
+          <div class="card-content white-text">
+            <span class="card-title">Your Whatsapp Credits</span>
+            <h5 class="center" id="soniSirAvailableCredits"></h5>
+          </div>
+        </div>
+      </div>
+      <div class="col l6">
+        <div class="card blue-grey darken-1 z-depth-5">
+          <div class="card-content white-text">
+            <span class="card-title">Customer's Whatsapp Credits</span>
+            <h5 class="center" id="customersAvailableCredits"></h5>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col l6">
+        <div class="card blue-grey darken-1 z-depth-5">
+          <div class="card-content white-text">
+            <span class="card-title">Your Transactional SMS Credits</span>
+            <h5 class="center" id="soniSirAvailableSMSCredits"></h5>
+          </div>
+        </div>
+      </div>
+      <div class="col l6">
+        <div class="card blue-grey darken-1 z-depth-5">
+          <div class="card-content white-text">
+            <span class="card-title">Your DLT SMS Credits</span>
+            <h5 class="center" id="soniSirAvailabledltSMSCredits"></h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</div>
+
+<ul id="slide-out" class="sidenav">
+  <li>
+    <div class="user-view">
+      <div class="background">
+        <!-- <img src="images/office.jpg"> -->
+      </div>
+      <!-- <a href="#user"><img class="circle" src="images/yuna.jpg"></a> -->
+      <!-- <a href="#name"><span class="white-text name">John Doe</span></a> -->
+      <!-- <a href="#email"><span class="white-text email">jdandturk@gmail.com</span></a> -->
+    </div>
+  </li>
+  <!-- <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li> -->
+  <li><a href="#createNewCustomerModal" class="modal-trigger" >Create New Customer</a></li>
+  <li>
+    <div class="divider"></div>
+  </li>
+  <li><a class="subheader">Subheader</a></li>
+  <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
+</ul>
+
+
+
+<script>
+  const createNewCustomerForm = document.querySelector('#createNewCustomerForm');
+  let fullNameError = document.querySelector('.fullname-error');
+  let emailError = document.querySelector('.email-error');
+  let passwordError = document.querySelector('.password-error');
+
+  createNewCustomerForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    emailError.textContent = ''; 
+    passwordError.textContent = '';
+    fullNameError.textContent = '';
+    const fullName = createNewCustomerForm.fullName.value;
+    const email = createNewCustomerForm.email.value;
+    const password = createNewCustomerForm.password.value;
+    const smsUserName = createNewCustomerForm.smsUserName.value;
+    const smsKey = createNewCustomerForm.smsKey.value;
+    const smsAccUsg = createNewCustomerForm.smsAccUsg.value;
+    const entityId = createNewCustomerForm.entityId.value;
+    try {
+      const res = await fetch('/signup', {
+        method: 'POST',
+        body: JSON.stringify({ fullName, email, password, smsUserName, smsKey, smsAccUsg, entityId }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await res.json();
+      console.log(data.email);
+      if (data.errors) {
+        fullNameError.textContent = data.errors.fullname;
+        emailError.textContent = data.errors.email;
+        passwordError.textContent = data.errors.password;
+      }
+      if (data) {
+        location.assign('/adminpage')
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  })
+
+
+  // ISSUE CREDITS TO THE USER
+  // INJECT CUSTOMER ID TO THE MODAL
+  const issueCreditsBtn = document.querySelectorAll('.issueCreditsBtn');
+    issueCreditsBtn.forEach((elem) => {
+      elem.addEventListener('click', function (event) {
+        event.preventDefault();
+        const customerId = this.parentNode.id;
+        console.log(customerId);
+        const issueCreditsmodal = M.Modal.getInstance(document.querySelector('#issueCreditsToCustomerModal'));
+        const customerIDHolder = document.querySelector('#customerID');
+        customerIDHolder.value = customerId;
+      });
+    });
+    
+    const issueCreditsToCustomerForm = document.querySelector('#issueCreditsToCustomerForm');
+    issueCreditsToCustomerForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      let customerid = issueCreditsToCustomerForm.customerID.value;
+      console.log(customerid);
+      let credits = issueCreditsToCustomerForm.issueCredits.value;
+      if (isNaN(credits)) {
+        document.getElementById('numberError').style.display = 'block';
+      } else {
+        try {
+          const res = await fetch('/issuecreditsendpoint', {
+            method: 'POST',
+            body: JSON.stringify({ customerid, credits }),
+            headers: { 'Content-Type': 'application/json' }
+          });
+          const data = await res.json();
+          console.log(data.acknowledged);
+          if (data.errors) {
+            console.log(data.errors.message);
+          }
+          if (data.acknowledged) {
+            issueCreditsToCustomerForm.reset();
+            let elem = document.querySelector('#issueCreditsToCustomerModal');
+            M.Modal.init();
+            let instance = M.Modal.getInstance(elem);
+            instance.close();
+            location.assign('/adminpage');
+          } else if (data.message == 'Insufficient Credits Available.') {
+            document.querySelector('#insufficientCreditsErrorMsg').style.display = 'block';
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    });
+
+
+    
+
+    // delete customer
+    // INJECT CUSTOMER ID TO THE MODAL
+    const deleteCustomerBtn = document.querySelectorAll('.deleteCustomerBtn');
+    deleteCustomerBtn.forEach((elem) => {
+      elem.addEventListener('click', function (event) {
+        event.preventDefault();
+        const customerId = this.parentNode.id;
+        const customerfullName = this.parentNode.dataset.fullname;
+        const issueCreditsmodal = M.Modal.getInstance(document.querySelector('#deleteCustomerModal'));
+        const customerIDHolder = document.querySelector('#deleteCustomerDislayName');
+        customerIDHolder.classList = customerId;
+        customerIDHolder.innerText = `Customer Name : ${customerfullName}`;;
+      });
+    });
+
+    const deleteCustomerForm = document.querySelector('#deleteCustomerForm');
+    deleteCustomerForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const customerIDHolder = document.querySelector('#deleteCustomerDislayName');
+      const customerId = customerIDHolder.classList;
+      try {
+        const res = await fetch('/deletecustomer', {
+          method: 'POST',
+          body: JSON.stringify({ customerId }),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        console.log(data);
+        if (data.message == 'Customer deleted successfully') {
+          deleteCustomerForm.reset();
+          let elem = document.querySelector('#deleteCustomerModal');
+          M.Modal.init();
+          let instance = M.Modal.getInstance(elem);
+          instance.close();
+          location.assign('/adminpage');
+        } else if (data.message === 'Customer not found') {
+          console.log('something went wrong');
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+
+    
+    const showCreditsButn = document.querySelector('#showCreditsBtn');
+    showCreditsButn.addEventListener('click', async () => {
+      let soniSirAvailableCredits = document.querySelector('#soniSirAvailableCredits');
+      let customersAvailableCredits = document.querySelector('#customersAvailableCredits');
+      let soniSirAvailableSMSCredits = document.querySelector('#soniSirAvailableSMSCredits');
+      let soniSirAvailabledltSMSCredits = document.querySelector('#soniSirAvailabledltSMSCredits');
+      try {
+        const res = await fetch('/showavailablecreditsforsonisir', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        soniSirAvailableCredits.innerText = data.soniSirCredits;
+        customersAvailableCredits.innerText = data.totalCustomerCredits;
+        soniSirAvailableSMSCredits.innerText = data.smsCount;
+        soniSirAvailabledltSMSCredits.innerText = data.dltsmsCount;
+      } catch (error) {
+        console.log(error);
+      }
+    })
+
+    
+
+
+</script>
+<%- include('partials/footer'); -%>

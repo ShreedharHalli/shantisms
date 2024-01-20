@@ -1,0 +1,82 @@
+body {
+  background: hsl(206, 9%, 15%);
+  color: #86C232
+}
+
+.homePageForBiggerDevices {
+  background-image: url('/deskbkg.jpg');
+  /* background-image: url('/bkg11.jpg'); */
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: #86C232;
+}
+
+.homePageForSmallerDevices {
+  background-image: url('/mobbkg.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: #86C232;
+}
+
+@media (max-width: 768px) {
+  .homePageForSmallerDevices {
+      height:100vh;
+  }
+}
+
+
+.nav-wrapper {
+    background: hsl(206, 9%, 15%);
+    color: #86C232
+}
+
+.servicesForDesktop {
+  margin-top: 450px;
+}
+
+.servicesForMob {
+  margin-top: 350px;
+}
+
+#whatsappConnectionStatusModal {
+  background: hsl(206, 9%, 15%);
+}
+
+#qrCodeGenerateModal {
+  background: hsl(206, 9%, 15%);
+}
+#loginModal {
+  background: hsl(206, 9%, 15%);
+}
+
+#createNewCustomerModal {
+  background: hsl(206, 9%, 15%);
+}
+
+#issueCreditsToCustomerModal {
+  background: hsl(206, 9%, 15%);
+}
+
+#deleteCustomerModal {
+  background: hsl(206, 9%, 15%);
+}
+
+#setwebhookModal {
+  background: hsl(206, 9%, 15%); 
+}
+
+#issueCreditsToCustomerModal {
+  background: hsl(206, 9%, 15%); 
+}
+
+#showCreditsModal {
+  background: hsl(206, 9%, 15%);
+}
+
+#dropdown1 {
+  background: hsl(206, 9%, 15%);
+}
+
+#disConnConfModal {
+  background: hsl(206, 9%, 15%);
+}
