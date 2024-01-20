@@ -40,7 +40,6 @@ const checkUser = (req, res, next) => {
                 let userListForAdmin = await User.find( {  } );
                 res.locals.userListForAdmin = userListForAdmin
                 res.locals.messageLogs = messageLogs;
-                console.log(`this is message log ${messageLogs}`);
                 next();
             }
         });
