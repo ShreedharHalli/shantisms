@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const axios = require('axios');
 
 // handle errors
 const handleErrors = (err) => {
@@ -157,11 +158,9 @@ module.exports.showAvailableCreditsToSoniSir_post = async (req, res) => {
     const soniSirCredits = soniSirDoc.AvailableCredits;
     const allDocs = await User.find({  }).select('AvailableCredits').exec();
     const totalCustomerCredits = allDocs.reduce((total, user) => total + user.AvailableCredits, 0) - soniSirCredits;
-
         // Make the HTTP request to retrieve the balance sms value
         const url = 'http://sandesh.sonisms.in/getbalance.jsp?user=Chowgule&key=0e465e1124XX&accusage=1';
         const response = await axios.get(url);
-        console.log(response.json());
         // Parse the data from the response
         const smsCount = response.data;
 
@@ -177,6 +176,7 @@ module.exports.showAvailableCreditsToSoniSir_post = async (req, res) => {
         // res.json({ soniSirCredits, totalCustomerCredits, smsCount, dltsmsCount });
         res.json({ soniSirCredits, totalCustomerCredits, smsCount, dltsmsCount });
     } catch (error) {
+        console.log(error);
         res.status(400).json(error.message);
     } 
 };

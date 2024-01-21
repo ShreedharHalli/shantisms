@@ -13,15 +13,12 @@ const { requireAuth, checkUser } = require('./middleware/authMiddleware');
 const { Server } = require("socket.io");
 const http = require("http");
 const User = require('./models/User');
-// const { unsubscribe } = require("diagnostics_channel");
 const MessageLog = require('./models/MessageLog');
 const axios = require('axios');
 
 
 dotenv.config();
 const sessionMap = new Map();
-
-
 
 
 
@@ -262,8 +259,9 @@ async function initiateAllWhatsappClients() {
           switch (ack) {
             case 3:
               // The message was read
-              // console.log('The message was SEEN', msg.body, 'and the id is ' + msg._data.id._serialized);
+              console.log('The message was SEEN', msg.body, 'and the id is ' + msg._data.id._serialized);
               const setMsgStatusToSeen = await MessageLog.updateOne({ messageId: msg._data.id._serialized }, { $set: { status: 'Seen' } });
+              console.log(setMsgStatusToSeen);
               // Update message doc here
               break;
             // Add more cases as needed
@@ -279,8 +277,9 @@ async function initiateAllWhatsappClients() {
             case 2:
               // Handle ACK_DEVICE
               // Delivered event
-              // console.log('The message was DELIVERED', msg.body, 'and the id is ' + msg._data.id._serialized);
+              console.log('The message was DELIVERED', msg.body, 'and the id is ' + msg._data.id._serialized);
               const setMsgStatusToDelivered = await MessageLog.updateOne({ messageId: msg._data.id._serialized }, { $set: { status: 'Delivered' } });
+              console.log(setMsgStatusToDelivered);
               break;
             case 4:
               // Handle ACK_PLAYED
@@ -460,10 +459,6 @@ app.post('/api/sendbulk', async (req, res) => {
                   res.status(200).send({
                     response: response
                   })
-                } else {
-                  res.status(500).send({
-                    message: 'Incorrect Whatsapp Sender Number'
-                  })
                 }
               }
             } else {
@@ -572,8 +567,8 @@ async function sendbulkWhatsapp(clientObj, tonums, message, messageType, file, f
                 results.push(`sms, ${error.message}`);
               }
             }
-            const delay = Math.floor(Math.random() * (1000 - 500 + 1)) + 500;
-            await sleep(delay);
+            // const delay = Math.floor(Math.random() * (1000 - 500 + 1)) + 500;
+            // await sleep(delay);
           }
           resolve(results.join('\n')); // Join the array elements with '\n' to create a multi-line string
         } catch (error) {
