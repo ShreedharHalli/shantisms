@@ -151,14 +151,15 @@ module.exports.setwebhook_post = async (req, res) => {
 
 
 module.exports.showAvailableCreditsToSoniSir_post = async (req, res) => {
+    const { customerId } = req.body; // work pending on this
     try {
     const soniSirDoc = await User.findOne({ _id: '659e94f92259ef5e6f262d4a' })
     const soniSirCredits = soniSirDoc.AvailableCredits;
     const allDocs = await User.find({  }).select('AvailableCredits').exec();
     const totalCustomerCredits = allDocs.reduce((total, user) => total + user.AvailableCredits, 0) - soniSirCredits;
-/* 
+
         // Make the HTTP request to retrieve the balance sms value
-        const url = 'http://sandesh.sonisms.in/getbalance.jsp?user=SCHOOL3&key=a90266792eXX&accusage=1';
+        const url = 'http://sandesh.sonisms.in/getbalance.jsp?user=Chowgule&key=0e465e1124XX&accusage=1';
         const response = await axios.get(url);
         console.log(response.json());
         // Parse the data from the response
@@ -166,15 +167,15 @@ module.exports.showAvailableCreditsToSoniSir_post = async (req, res) => {
 
 
         // Make the HTTP request to retrieve the balance sms value
-        const dlturl = 'http://sandesh.sonisms.in/getbalance.jsp?user=SCHOOL3&key=a90266792eXX&accusage=11';
+        const dlturl = 'http://sandesh.sonisms.in/getbalance.jsp?user=Chowgule&key=0e465e1124XX&accusage=11';
         const dltRes = await axios.get(dlturl);
 
         // Parse the data from the response
         const dltsmsCount = dltRes.data;
 
- */
+
         // res.json({ soniSirCredits, totalCustomerCredits, smsCount, dltsmsCount });
-        res.json({ soniSirCredits, totalCustomerCredits });
+        res.json({ soniSirCredits, totalCustomerCredits, smsCount, dltsmsCount });
     } catch (error) {
         res.status(400).json(error.message);
     } 

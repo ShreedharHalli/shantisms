@@ -158,7 +158,7 @@ async function insertClientDetailstoCustDoc(customerId, connectedWhatsappNo, cli
         return;
       } else {
         const sessionObj = { client: clientId, connectedWano: connectedWhatsappNo };
-        User.updateOne({ _id: customerId }, { $set: { connectedWhatsAppDevices: sessionObj } })
+        User.updateOne({ _id: customerId }, { $push: { connectedWhatsAppDevices: sessionObj } })
           .then(updatedUser => {
             console.log('Object pushed into connectedWhatsAppDevices array:', updatedUser);
           })
@@ -553,6 +553,8 @@ async function sendbulkWhatsapp(clientObj, tonums, message, messageType, file, f
                   results.push(`wh, failed, failed, ${err}, ${idno},${number}`);
                 });
               }
+              let updatedWhatsappCount = user.AvailableCredits - whatsappMsgSentCount;
+              await User.updateOne({ _id: user._id }, { $set: { AvailableCredits: updatedWhatsappCount } });
             } else {
               // CURRENT NUMBER IS NOT REGISTERED WITH WHATSHAPP, SEND FALLBACK MESSAGE
               const smsPortalURL = `http://sandesh.sonisms.in/submitsms.jsp?user=${user.smsUserName}&key=${user.smsKey}&mobile=`;
@@ -573,8 +575,6 @@ async function sendbulkWhatsapp(clientObj, tonums, message, messageType, file, f
             const delay = Math.floor(Math.random() * (1000 - 500 + 1)) + 500;
             await sleep(delay);
           }
-          let updatedWhatsappCount = user.AvailableCredits - whatsappMsgSentCount;
-          await User.updateOne({ _id: user._id }, { $set: { AvailableCredits: updatedWhatsappCount } });
           resolve(results.join('\n')); // Join the array elements with '\n' to create a multi-line string
         } catch (error) {
           reject(error);
@@ -802,7 +802,7 @@ function convertStringToArray(str) {
   // Iterate through the array and check if each string starts with +91
   for (let i = 0; i < newArr.length; i++) {
     if (!newArr[i].startsWith("91")) {
-      newArr[i] = "91" + newArr[i]
+      newArr[i] = "91" + newArr[i].replace(/^0+/, "")
     }
   }
   return newArr
