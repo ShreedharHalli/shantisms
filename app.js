@@ -609,11 +609,12 @@ app.get('/api/getwhmsgstatus', async (req, res) => {
         });
       } else {
         for (const wapostid of wapostidsArr) {
-          console.log(wapostid);
           const message = await MessageLog.findOne({ custId: wacustid, messageId: wapostid });
-          console.log(message);
-          const msgStatus = message.status;
-          results.push(`Timestamp: ${message.timeStamp.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })}, Sent From: ${message.sentFrom}, Sent To: ${message.sentTo}, wapostid: ${wapostid}, Status: ${msgStatus}`);
+          if (message) {
+            results.push(`Timestamp: ${message.timeStamp.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })}, Sent From: ${message.sentFrom}, Sent To: ${message.sentTo}, wapostid: ${wapostid}, Status: ${message.status}`);
+          } else {
+            results.push(`Invalid wapostid: ${wapostid}`);
+          }
         }
         res.status(200).json({
           Response: results.join('\n')
