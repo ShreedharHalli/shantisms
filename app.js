@@ -632,7 +632,7 @@ app.get('/api/iswaregistered', async (req, res) => {
   const results = [];
   try {
     User.findById(wacustid)
-    then(async (user) => {
+    .then(async (user) => {
       if (!user) {
         // Handle case where user is not found
         res.status(404).json({
