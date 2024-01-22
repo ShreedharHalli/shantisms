@@ -650,10 +650,10 @@ app.get('/api/iswaregistered', async (req, res) => {
             for (const wano of nos) {
               const isRegistered = await client.isRegisteredUser(wano);
               if (isRegistered) {
-                results.push(`Mob: ${wano}, iswaregistered: "True"`);
+                results.push(`Mob: ${wano}, iswaregistered: True`);
               }
               else {
-                results.push(`Mob: ${wano}, iswaregistered: "False"`);
+                results.push(`Mob: ${wano}, iswaregistered: False`);
               }
             }
           }
