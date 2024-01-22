@@ -596,7 +596,7 @@ async function sendBulksms(user, tonums, message, tempid, idno, unicode, time, a
 
 app.get('/api/getwhmsgstatus', async (req, res) => {
   const { wacustid, wapostids } = req.body;
-  console.log(wacustid, wapostids);
+  const wapostidsArr = wapostids.split(', ');
   const results = [];
   try {
     User.findById(wacustid)
@@ -608,7 +608,7 @@ app.get('/api/getwhmsgstatus', async (req, res) => {
           response: "Customer Not Found"
         });
       } else {
-        for (const wapostid of wapostids) {
+        for (const wapostid of wapostidsArr) {
           console.log(wapostid);
           const message = await MessageLog.findOne({ custId: wacustid, messageId: wapostid });
           console.log(message);
@@ -771,6 +771,8 @@ function convertStringToArray(str) {
   }
   return newArr
 }
+
+
 
 
 
