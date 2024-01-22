@@ -36,6 +36,10 @@ const MessageLogsSchema = new mongoose.Schema({
     sonisirId: {
         type: String,
         default: '0'
+    },
+    sentFrom: {
+        type: String,
+        default: '0'
     }
 });
 

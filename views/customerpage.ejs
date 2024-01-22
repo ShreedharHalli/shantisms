@@ -34,13 +34,13 @@
               <%= elem.timeStamp.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }); %>
             </td>
             <td>
+              <%= elem.sentFrom %>
+            </td>
+            <td>
               <%= elem.sentTo %>
             </td>
             <td>
               <%= elem.content %>
-            </td>
-            <td>
-              <%= elem.media %>
             </td>
             <td>
               <%= elem.status %>
@@ -180,7 +180,7 @@
         titleForQrCodeModal.innerHTML = 'Please scan below QR Code';
   });
 
-  socket.on('ClientIsReady', () => {
+  socket.on('clientIsAuthenticated', () => {
      qrcodeContainer.innerHTML = `<img src="" alt="QR Code" style="width: 40%; height: 40%;" />`;
     // Initialize the modal properly
     let whatsappConnectionStatusModal = document.querySelector('#qrCodeGenerateModal');

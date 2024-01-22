@@ -61,21 +61,6 @@ app.use(authRoutes);
 
 
 
-app.post('/api/getmessagestatus', async (req, res) => {
-  let { customerId, messageId } = req.body;
-  await User.findById(customerId)
-    .then(async (user) => {
-      await MessageLog.findOne({ messageId: messageId }).then((msg) => {
-        let status = msg.status;
-        res.status(200).json({ status: status });
-      });
-    }).catch((error) => {
-      console.log(error);
-      res.status(500).json({ error: 'Couldnt find the message with id ' + messageId });
-    });
-});
-
-
 
 // socket io
 io.on("connection", (socket) => {
@@ -97,6 +82,7 @@ io.on("connection", (socket) => {
 
     client.on('authenticated', () => {
       console.log('AUTHENTICATED');
+      socket.emit('clientIsAuthenticated');
     });
 
     client.on('auth_failure', msg => {
@@ -110,7 +96,7 @@ io.on("connection", (socket) => {
         client: client,
       });
       console.log('Client is ready!');
-      socket.emit('ClientIsReady');
+      // socket.emit('ClientIsReady');
       let connectedWhatsappNo = client.info.wid.user;
       console.log('connected Whatsapp No is ' + connectedWhatsappNo);
       insertClientDetailstoCustDoc(customerId, connectedWhatsappNo, clientIdString)
@@ -126,7 +112,7 @@ function whatsappFactoryFunction(clientId) {
     restartOnAuthFail: true,
     qrMaxRetries: 10, // keep it outside of the puppeteer object
     puppeteer: {
-      // executablePath: '/usr/bin/google-chrome-stable',
+      executablePath: '/usr/bin/google-chrome-stable',
       headless: true,
       args: [
         '--no-sandbox',
@@ -455,7 +441,7 @@ app.post('/api/sendbulk', async (req, res) => {
                 if (device.connectedWano === senderWhatsappNo) {
                   const clientId = device.client;
                   const clientObj = sessionMap.get(clientId);
-                  const response = await sendbulkWhatsapp(clientObj, tonums, message, messageType, file, fileURL, idno, tempid, senderid, entityid, unicode, accusage, user, fileName, fallBackMessage)
+                  const response = await sendbulkWhatsapp(clientObj, tonums, message, messageType, file, fileURL, idno, tempid, senderid, entityid, unicode, accusage, user, fileName, fallBackMessage, senderWhatsappNo)
                   res.status(200).send({
                     response: response
                   })
@@ -481,7 +467,7 @@ app.post('/api/sendbulk', async (req, res) => {
 });
 
 
-async function sendbulkWhatsapp(clientObj, tonums, message, messageType, file, fileURL, idno, tempid, senderid, entityid, unicode, accusage, user, fileName, fallBackMessage) {
+async function sendbulkWhatsapp(clientObj, tonums, message, messageType, file, fileURL, idno, tempid, senderid, entityid, unicode, accusage, user, fileName, fallBackMessage, senderWhatsappNo) {
   return new Promise(async (resolve, reject) => {
     const supportedFormats = ['jpeg', 'jpg', 'png', 'gif', 'pdf', 'xls', 'xlsx', 'mp4', 'mkv', 'avi', 'mov', '3gp'];
     // dont use const
@@ -516,7 +502,7 @@ async function sendbulkWhatsapp(clientObj, tonums, message, messageType, file, f
               if (messageType === 'text') {
                 await client.sendMessage(mobNoAsUID, message).then(async (response) => {
                   const messageId = response._data.id._serialized;
-                  MessageLog.create({ custName: user.fullName, custId: user._id, sentTo: number, content: message, media: false, messageId: messageId, status: 'sent', sonisirId: idno })
+                  MessageLog.create({ custName: user.fullName, custId: user._id, sentTo: number, content: message, media: false, messageId: messageId, status: 'sent', sonisirId: idno, sentFrom: senderWhatsappNo })
                   results.push(`wh, sent, success, ${messageId}, ${idno},${number}, Via: 'Whatsapp'`);
                   whatsappMsgSentCount++
                 }).catch(err => {
@@ -527,7 +513,7 @@ async function sendbulkWhatsapp(clientObj, tonums, message, messageType, file, f
                 const media = MessageMedia.fromFilePath(filePath);
                 await client.sendMessage(mobNoAsUID, media, { caption: message }).then(async (response) => {
                   const messageId = response._data.id._serialized;
-                  MessageLog.create({ custName: user.fullName, custId: user._id, sentTo: number, content: message, media: true, messageId: messageId, status: 'sent', sonisirId: idno })
+                  MessageLog.create({ custName: user.fullName, custId: user._id, sentTo: number, content: message, media: true, messageId: messageId, status: 'sent', sonisirId: idno, sentFrom: senderWhatsappNo })
                   results.push(`wh, sent, success, ${messageId}, ${idno}, ${number}, Via: 'Whatsapp'`);
                   whatsappMsgSentCount++
                   await manageUploadedFile('delete', file);
@@ -539,7 +525,7 @@ async function sendbulkWhatsapp(clientObj, tonums, message, messageType, file, f
                 const media = MessageMedia.fromFilePath(filePath);
                 await client.sendMessage(mobNoAsUID, media, { caption: message }).then(async (response) => {
                   const messageId = response._data.id._serialized;
-                  MessageLog.create({ custName: user.fullName, custId: user._id, sentTo: number, content: message, media: true, messageId: messageId, status: 'sent', sonisirId: idno })
+                  MessageLog.create({ custName: user.fullName, custId: user._id, sentTo: number, content: message, media: true, messageId: messageId, status: 'sent', sonisirId: idno, sentFrom: senderWhatsappNo })
                   results.push(`wh, sent, success, ${messageId}, ${idno}, ${number}, Via: 'Whatsapp'`);
                   whatsappMsgSentCount++
                   await downloadFileFromUrl(fileURL, 'delete');
@@ -609,8 +595,10 @@ async function sendBulksms(user, tonums, message, tempid, idno, unicode, time, a
 
 
 app.get('/api/getwhmsgstatus', async (req, res) => {
-  const { whatsappcustid, idno } = req.body;
-    User.findById(whatsappcustid)
+  const { wacustid, wapostids } = req.body;
+  const results = [];
+  try {
+    User.findById(wacustid)
     .then(async (user) => {
       if (!user) {
         // Handle case where user is not found
@@ -619,17 +607,63 @@ app.get('/api/getwhmsgstatus', async (req, res) => {
           response: "Customer Not Found"
         });
       } else {
-          const message = await MessageLog.findOne({ custId: user._id, sonisirId: idno });
+        for (const wapostid of wapostids) {
+          const message = await MessageLog.findOne({ custId: wacustid, messageId: wapostid });
           const msgStatus = message.status;
-          console.log(`status is ${msgStatus}`)
-          res.status(200).json({
-            idno: idno,
-            status: msgStatus
-          });
+          results.push(`Timestamp: ${message.timeStamp.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })}, Sent From: ${message.sentFrom}, Sent To: ${message.sentTo}, wapostid: ${wapostid}, Status: ${msgStatus}`);
+        }
+        res.status(200).json({
+          Response: results.join('\n')
+        });
       }
     });
+  } catch (error) {
+    res.status(error.status).json({ message: error.message });
+  }
 });
 
+
+app.get('/api/iswaregistered', async (req, res) => {
+  const { wacustid, wanos } = req.body;
+  const results = [];
+  try {
+    User.findById(wacustid)
+    then(async (user) => {
+      if (!user) {
+        // Handle case where user is not found
+        res.status(404).json({
+          status: false,
+          response: "Customer Not Found"
+        });
+      } else {
+        for (const device of user.connectedWhatsAppDevices) {
+          const clientId = device.client;
+          const clientObj = sessionMap.get(clientId);
+          const client = clientObj.client;
+          const state = await client.getState();
+          if (state === "CONNECTED") {
+            const nos = convertStringToArray(wanos);
+            for (const wano of nos) {
+              const isRegistered = await isRegisteredWithWhatsapp(wano);
+              if (isRegistered) {
+                results.push(`Mob: ${wano}, iswaregistered: "True"`);
+              }
+              else {
+                results.push(`Mob: ${wano}, iswaregistered: "False"`);
+              }
+            }
+          }
+          break; // Exit the loop after finding the connected device
+        };
+      }
+      res.status(200).json({
+        Response: results.join('\n')
+      });
+    })
+  } catch (error) {
+    res.status(error.status).json({ message: error.message });
+  }
+})
 
 
 
