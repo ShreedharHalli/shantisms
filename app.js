@@ -596,6 +596,7 @@ async function sendBulksms(user, tonums, message, tempid, idno, unicode, time, a
 
 app.get('/api/getwhmsgstatus', async (req, res) => {
   const { wacustid, wapostids } = req.body;
+  console.log(wacustid, wapostids);
   const results = [];
   try {
     User.findById(wacustid)
@@ -608,6 +609,7 @@ app.get('/api/getwhmsgstatus', async (req, res) => {
         });
       } else {
         for (const wapostid of wapostids) {
+          console.log(wapostid);
           const message = await MessageLog.findOne({ custId: wacustid, messageId: wapostid });
           console.log(message);
           const msgStatus = message.status;
