@@ -609,6 +609,7 @@ app.get('/api/getwhmsgstatus', async (req, res) => {
       } else {
         for (const wapostid of wapostids) {
           const message = await MessageLog.findOne({ custId: wacustid, messageId: wapostid });
+          console.log(message);
           const msgStatus = message.status;
           results.push(`Timestamp: ${message.timeStamp.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })}, Sent From: ${message.sentFrom}, Sent To: ${message.sentTo}, wapostid: ${wapostid}, Status: ${msgStatus}`);
         }
