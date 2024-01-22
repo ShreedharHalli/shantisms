@@ -665,7 +665,7 @@ app.get('/api/iswaregistered', async (req, res) => {
       });
     })
   } catch (error) {
-    res.status(error.status).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 })
 
