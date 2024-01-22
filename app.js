@@ -648,7 +648,7 @@ app.get('/api/iswaregistered', async (req, res) => {
           if (state === "CONNECTED") {
             const nos = convertStringToArray(wanos);
             for (const wano of nos) {
-              const isRegistered = await isRegisteredWithWhatsapp(wano);
+              const isRegistered = await client.isRegisteredUser(wano);
               if (isRegistered) {
                 results.push(`Mob: ${wano}, iswaregistered: "True"`);
               }
