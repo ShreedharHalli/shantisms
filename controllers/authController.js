@@ -181,6 +181,34 @@ module.exports.showAvailableCreditsToSoniSir_post = async (req, res) => {
     } 
 };
 
+module.exports.updatesmsdetails_post = async (req, res) => {
+    const { customerId, smsUserName, smsKey, smsAccUsg, entityId } = req.body;
+    try {
+        const updatedSmsDetails = await User.updateOne({ _id: customerId }, { $set: { smsUserName: smsUserName, smsKey: smsKey, smsAccUsg: smsAccUsg, entityId: entityId } } );
+        res.status(200).json({ message: 'success' });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error.message);
+    }
+};
+
+module.exports.updatepass_post = async (req, res) => {
+    const { customerId, oldPass, newPass, confPass } = req.body;
+    try {
+        User.findOne({ _id: customerId })
+        .then(async (user) => {
+            if (!user) {
+                res.status(404).json({ message: 'invalid customer id' });
+            } else {
+                console.log(`this is customer id ${ customerId}`)
+                // work here
+            }
+        })
+    } catch (error) {
+        
+    }
+};
+
 
 
 

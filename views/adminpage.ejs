@@ -23,6 +23,7 @@
           <th>SMS Key</th>
           <th>Acc Usage</th>
           <th>Whatsapp Customer ID</th>
+          <th>Whatsapp Key</th>
           <th>Connected Whatsapp No</th>
           <th>Balance Credits</th>
           <th>Issue Credits</th>
@@ -52,6 +53,9 @@
                 </td>
                 <td>
                   <%= elem._id %>
+                </td>
+                <td>
+                  <%= elem.waSecretKey %>
                 </td>
   
                 <% 
@@ -87,7 +91,7 @@
                           </td>
                           <td id="<%= elem._id %>"><i href="#issueCreditsToCustomerModal"
                               class="material-icons issueCreditsBtn modal-trigger">add_shopping_cart</i></td>
-  
+
                           <td id="<%= elem._id %>" data-fullname="<%= elem.fullName %>"><i href="#deleteCustomerModal"
                               class="material-icons deleteCustomerBtn modal-trigger">delete_sweep</i></td>
                                       </tr>
@@ -201,6 +205,7 @@
       <h6 id="insufficientCreditsErrorMsg" class="red-text" style="display: none;">Insufficient credits available in your account.</h6>
     </div>
   </div>
+
 
   
 
@@ -347,12 +352,13 @@
         customerIDHolder.value = customerId;
       });
     });
+
+
     
     const issueCreditsToCustomerForm = document.querySelector('#issueCreditsToCustomerForm');
     issueCreditsToCustomerForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       let customerid = issueCreditsToCustomerForm.customerID.value;
-      console.log(customerid);
       let credits = issueCreditsToCustomerForm.issueCredits.value;
       if (isNaN(credits)) {
         document.getElementById('numberError').style.display = 'block';
@@ -431,7 +437,6 @@
     });
 
 
-    
     const showCreditsButn = document.querySelector('#showCreditsBtn');
     showCreditsButn.addEventListener('click', async () => {
       let soniSirAvailableCredits = document.querySelector('#soniSirAvailableCredits');

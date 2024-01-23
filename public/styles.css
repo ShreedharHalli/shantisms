@@ -80,3 +80,11 @@ body {
 #disConnConfModal {
   background: hsl(206, 9%, 15%);
 }
+
+#editSMSDetailsModal {
+  background: hsl(206, 9%, 15%);
+}
+
+#updatePasswordModal {
+  background: hsl(206, 9%, 15%);
+}

@@ -46,6 +46,10 @@ const userSchema = new mongoose.Schema({
     webHookUrl: {
         type: String,
         default: 'nowebhook'
+    },
+    waSecretKey: {
+        type: String,
+        default: '-'
     }
 });
 

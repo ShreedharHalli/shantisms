@@ -5,7 +5,7 @@
             <a href="#" class="brand-logo light-green-text">Shanti SMS</a>
             <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
-             <li><a class="light-green-text" href='#' id="loggedInUserDetails" data-user-id="<%= user._id %>"><%= `Welcome, ${user.fullName}` %></a></li> <!-- data-user-whatsappNumber="<%- user.connectedWhatsappNo %>" -->
+             <li><a class="light-green-text" href='#' id="loggedInUserDetails" data-user-id="<%= user._id %>" data-user-smsUserName="<%= user.smsUserName %>" data-user-smsKey="<%= user.smsKey %>" data-user-smsAccUsg="<%= user.smsAccUsg %>" data-user-entityId="<%= user.entityId %>"><%= `Welcome, ${user.fullName}` %></a></li> <!-- data-user-whatsappNumber="<%- user.connectedWhatsappNo %>" -->
             <li><a class="light-green-text dropdown-trigger" href='#' data-target='dropdown1'>Components</a></li>
             <li><a class="waves-effect waves-light black-text">
             </a></li>
@@ -19,9 +19,9 @@
           <thead>
             <tr>
               <th>Timestamp</th>
+              <th>Sent From</th>
               <th>Sent To</th>
               <th>Contents</th>
-              <th>Media</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -95,11 +95,89 @@
   <!-- <li><a class="light-green-text" id="qrCodeGenerateBtn">Connecte New Whatsapp Account</a></li> -->
   <li><a class="light-green-text" id="whatsappStatusBtn">Whatsapp Accounts</a></li>
   <li><a class="light-green-text" id="showMessagelogs">Message logs</a></li>
-    <!-- <li class="divider" tabindex="-1"></li>
-    <li><a class="light-green-text" href="#!">Provision 1</a></li>
+  <li class="divider" tabindex="-1"></li>
+  <li><a class="light-green-text modal-trigger" id="editSMSDetailsBtn" href="#editSMSDetailsModal">Update SMS Details</a></li>
+  <li><a class="light-green-text modal-trigger" href="#updatePasswordModal">Update Password</a></li>
+    <!--<li><a class="light-green-text" href="#!">Provision 1</a></li>
     <li><a class="light-green-text" href="#!">Prov 2</a></li>
     <li><a class="light-green-text" href="#!">Prov 3</a></li> -->
   </ul>
+
+  
+  <!-- UPDATE SMS DETAILS MODAL -->
+  <div id="editSMSDetailsModal" class="modal">
+    <div class="modal-content">
+      <h4 class="center">Update SMS Details</h4>
+      <div class="row">
+        <form class="col s12" id="editSMSDetailsForm">
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="smsUserName" id="smsUserName" type="text" class="validate white-text" required>
+              <label for="smsUserName">SMS User Name</label>
+              <div class="fullname-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="smsKey" id="smsKey" type="text" class="validate white-text" required>
+              <label for="smsKey">SMS Key</label>
+              <div class="fullname-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="smsAccUsg" id="smsAccUsg" type="text" class="validate white-text" required>
+              <label for="smsAccUsg">Acc Usage</label>
+              <div class="fullname-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="entityId" id="entityId" type="text" class="validate white-text" required>
+              <label for="entityId">Entity Id</label>
+              <div class="fullname-error"></div>
+            </div>
+          </div>
+          <button class="waves-effect waves-light btn red right">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  
+  <!-- UPDATE PASSWORD MODAL -->
+  <div id="updatePasswordModal" class="modal">
+    <div class="modal-content">
+      <h4 class="center">Update Password</h4>
+      <div class="row">
+        <form class="col s12" id="updatepasswordForm">
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="oldPass" id="oldPass" type="text" class="validate white-text" required>
+              <label for="oldPass">Old Password</label>
+              <div class="oldPass-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="newPass" id="newPass" type="password" class="validate white-text" required minlength="6">
+              <label for="newPass">New Password [Minimum 6 Digit]</label>
+              <div class="newPass-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="confPass" id="confPass" type="password" class="validate white-text" required minlength="6">
+              <label for="confPass">Confirm Password</label>
+              <div class="confPass-error"></div>
+            </div>
+          </div>
+          <button class="waves-effect waves-light btn red right">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
 
 
   <!-- DISCONNECT CURRENT WHATSAPP CONFIRMATION MODAL -->
@@ -144,6 +222,12 @@
     const loggedInUserDetails = document.querySelector('#loggedInUserDetails');
     const qrCodeGenerateBtn = document.querySelector('#qrCodeGenerateBtn');
     const customerId = loggedInUserDetails.getAttribute('data-user-id');
+
+    const smsUserName = loggedInUserDetails.getAttribute('data-user-smsUserName');
+    const smsKey = loggedInUserDetails.getAttribute('data-user-smsKey');
+    const smsAccUsg = loggedInUserDetails.getAttribute('data-user-smsAccUsg');
+    const entityId = loggedInUserDetails.getAttribute('data-user-entityId');
+
     let qrcodeContainer = document.querySelector('#newQRCodeContainer');
     let titleForQrCodeModal = document.querySelector('#titleForQrCodeModal');
     const socket = io();
@@ -222,6 +306,73 @@
       console.log(error);
     }
   });
+
+  const editSMSDetailsBtn = document.querySelector("#editSMSDetailsBtn");
+  editSMSDetailsBtn.addEventListener('click', async function (event) {
+    event.preventDefault();
+    document.getElementById('smsUserName').value = smsUserName;
+    document.getElementById('smsKey').value = smsKey;
+    document.getElementById('smsAccUsg').value = smsAccUsg;
+    document.getElementById('entityId').value = entityId;
+    // TO UPLIFT THE INPUT NAME AS IT WAS OVERLAPPING THE TEXT
+    M.updateTextFields();
+  });
+
+  const editSMSDetailsForm = document.querySelector('#editSMSDetailsForm');
+  editSMSDetailsForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const smsUserName = editSMSDetailsForm.smsUserName.value;
+    const smsKey = editSMSDetailsForm.smsKey.value;
+    const smsAccUsg = editSMSDetailsForm.smsAccUsg.value;
+    const entityId = editSMSDetailsForm.entityId.value;
+    try {
+      const res = await fetch('/updatesmsdetails', {
+        method: 'POST',
+        body: JSON.stringify ({ customerId, smsUserName, smsKey, smsAccUsg, entityId }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await res.json();
+      if (data.message === 'success') {
+        editSMSDetailsForm.reset();
+        let elem = document.querySelector('#editSMSDetailsModal');
+        M.Modal.init();
+        let instance = M.Modal.getInstance(elem);
+        instance.close();
+        location.assign('/customerpage');
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  });
+
+  const updatepasswordForm = document.querySelector('#updatepasswordForm');
+  updatepasswordForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const oldPass = updatepasswordForm.oldPass.value;
+    const newPass = updatepasswordForm.newPass.value;
+    const confPass = updatepasswordForm.confPass.value;
+
+    try {
+      const res = await fetch('/updatepass', {
+        method: 'POST',
+        body: JSON.stringify( { customerId, oldPass, newPass, confPass }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = res.json();
+      if (data.message === 'success') {
+        updatepasswordForm.reset();
+        let elem = document.querySelector('#updatePasswordModal');
+        M.Modal.init();
+        let instance = M.Modal.getInstance(elem);
+        instance.close();
+        location.assign('/customerpage');
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+
+  });
+
 
 
   </script>

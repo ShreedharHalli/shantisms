@@ -14,6 +14,8 @@ router.post('/issuecreditsendpoint', authController.issuecreditsendpoint_post);
 router.post('/showavailablecreditsforsonisir', authController.showAvailableCreditsToSoniSir_post);
 router.post('/deletecustomer', authController.deletecustomer_post);
 router.post('/setwebhook', authController.setwebhook_post);
+router.post('/updatesmsdetails', authController.updatesmsdetails_post);
+router.post('/updatepass', authController.updatepass_post);
 
 
 module.exports = router;

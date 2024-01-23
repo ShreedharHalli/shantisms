@@ -135,11 +135,13 @@ function whatsappFactoryFunction(clientId) {
 
 async function insertClientDetailstoCustDoc(customerId, connectedWhatsappNo, clientId) {
   User.findOne({ _id: customerId })
-    .then(user => {
+    .then(async (user) => {
       if (!user) {
         console.log('Customer doc not found in database');
         return;
       } else {
+        // waSecretKey: generateRandomSecretKey()
+        await User.updateOne({ _id: customerId }, { $set: { waSecretKey: generateRandomSecretKey() } });
         const sessionObj = { client: clientId, connectedWano: connectedWhatsappNo };
         User.updateOne({ _id: customerId }, { $push: { connectedWhatsAppDevices: sessionObj } })
           .then(updatedUser => {
@@ -378,6 +380,7 @@ app.post('/api/sendbulk', async (req, res) => {
   const tonums = req.body.tonums;
   const message = req.body.message;
   const smsCustId = req.body.smscustid;
+  const waKey = req.body.wakey;
   const entityid = req.body.entityid;
   const senderwano = req.body.senderwano;
   const messageType = req.body.messagetype.toLowerCase();
@@ -411,11 +414,17 @@ app.post('/api/sendbulk', async (req, res) => {
                 response: "Customer Not Found"
               });
             } else {
+              if (waKey === user.waSecretKey) {
               // const response = await sendBulksms(smsCustId, mobiles, message, tempid, senderid, idno, unicode, time, accusage)
               const response = await sendBulksms(user, tonums, message, tempid, idno, unicode, time, accusage, senderid, entityid)
               res.status(200).send({
                 response: response
               })
+            } else {
+              res.status(500).send({
+                message: "Invalid secret key"
+              })
+            }
             }
           })
       } catch (error) {
@@ -611,7 +620,8 @@ app.get('/api/getwhmsgstatus', async (req, res) => {
         for (const wapostid of wapostidsArr) {
           const message = await MessageLog.findOne({ custId: wacustid, messageId: wapostid });
           if (message) {
-            results.push(`Timestamp: ${message.timeStamp.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })}, Sent From: ${message.sentFrom}, Sent To: ${message.sentTo}, wapostid: ${wapostid}, Status: ${message.status}`);
+            const dateWithoutComma = message.timeStamp.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }).replace(/,/g, '');
+            results.push(`Timestamp: ${ dateWithoutComma }, Sent From: ${message.sentFrom}, Sent To: ${message.sentTo}, wapostid: ${wapostid}, Status: ${message.status}`);
           } else {
             results.push(`Invalid wapostid: ${wapostid}`);
           }
@@ -843,4 +853,18 @@ function convertStringToArray(str) {
   return newArr
 }
 
+
+
+// GENERATING RANDOM 6 CHARACTERS STRING TO SAVE CLIENT SESSIONS
+function generateRandomSecretKey() {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+
+  for (let i = 0; i < 6; i++) {// Changed the loop iteration count to 6
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+
+  return result;
+}
 
