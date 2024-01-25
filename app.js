@@ -46,7 +46,7 @@ app.set('view engine', 'ejs');
 mongoose.connect(process.env.MONGODBURI).then(e => {
   server.listen(PORT);
   console.log('Mongodb connected and server listening on port ' + PORT);
-  initiateAllWhatsappClients()
+  initiateAllWhatsappClients();
 })
   .catch(error => {
     console.log(error.message)
@@ -620,7 +620,12 @@ app.get('/api/getwhmsgstatus', async (req, res) => {
         for (const wapostid of wapostidsArr) {
           const message = await MessageLog.findOne({ custId: wacustid, messageId: wapostid });
           if (message) {
-            const dateWithoutComma = message.timeStamp.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }).replace(/,/g, '');
+            const options = { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false };
+            const dateFormatter = new Intl.DateTimeFormat('en-US', options);
+            const formattedDate = dateFormatter.format(message.timeStamp);
+
+            const dateWithoutComma = formattedDate.replace(/,/g, '');
+
             results.push(`Timestamp: ${ dateWithoutComma }, Sent From: ${message.sentFrom}, Sent To: ${message.sentTo}, wapostid: ${wapostid}, Status: ${message.status}`);
           } else {
             results.push(`Invalid wapostid: ${wapostid}`);
