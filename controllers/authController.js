@@ -1,7 +1,7 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const axios = require('axios');
-
+const bcrypt = require('bcrypt');
 // handle errors
 const handleErrors = (err) => {
     console.log(err.message, err.code);
@@ -67,6 +67,8 @@ module.exports.signup_post = async (req, res) => {
     const { fullName, email, password, smsUserName, smsKey, smsAccUsg, entityId } = req.body;
     try {
         const user = await User.create({ fullName, email, password, smsUserName, smsKey, smsAccUsg, entityId });
+        // THIS IS COMMENTED OUT AS IT WAS CHANGING THE USER ACCOUNT WHILE CREATING NEW CUSTOMER
+
         // const token = createToken(user._id);
         // res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
         res.status(201).json({user: user._id});
@@ -195,18 +197,81 @@ module.exports.updatesmsdetails_post = async (req, res) => {
 module.exports.updatepass_post = async (req, res) => {
     const { customerId, oldPass, newPass, confPass } = req.body;
     try {
-        User.findOne({ _id: customerId })
+        User.findOne({_id: customerId})
         .then(async (user) => {
             if (!user) {
-                res.status(404).json({ message: 'invalid customer id' });
+                res.status(404).json({
+                    message: 'User not found'}) 
             } else {
-                console.log(`this is customer id ${ customerId}`)
-                // work here
+                if (newPass === confPass) {
+                    console.log('password matched');
+                    // work here
+                    const auth = await bcrypt.compare(oldPass, user.password);
+                    if (auth) {
+                        const salt = await bcrypt.genSalt(10);
+                        const hashedPass = await bcrypt.hash(newPass, salt);
+                        const updatedPass = await User.updateOne({ _id: customerId }, { $set: { password: hashedPass } });
+                        console.log(updatedPass);
+                        // jwt token
+                        const token = createToken(user._id);
+                        res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
+                        res.status(200).json({ message: 'success' });
+                    } else {
+                        console.log('old password is incorrect');
+                        res.status(404).json({
+                            message: 'Old Password is incorrect'
+                        });
+                    }
+                } else {
+                    res.status(404).json({
+                        message: 'New Password and Confirm password do not match'
+                    });
+                }
             }
-        })
-    } catch (error) {
-        
-    }
+        });
+    } catch (error) {   
+        console.log(error);
+        res.status(400).json(error.message);
+}
+ 
+};
+
+
+module.exports.updatepasssonisir_post = async (req, res) => {
+    const { customerId, oldPass, newPass, confPass } = req.body;
+    try {
+        User.findOne({_id: customerId})
+        .then(async (user) => {
+            if (!user) {
+                res.status(404).json({
+                    message: 'User not found'}) 
+            } else {
+                if (newPass === confPass) {
+                    const auth = await bcrypt.compare(oldPass, user.password);
+                    if (auth) {
+                        const salt = await bcrypt.genSalt(10);
+                        const hashedPass = await bcrypt.hash(newPass, salt);
+                        const updatedPass = await User.updateOne({ _id: customerId }, { $set: { password: hashedPass } });
+                        const token = createToken(user._id);
+                        res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
+                        res.status(200).json({ message: 'success' });
+                    } else {
+                        console.log('old password is incorrect');
+                        res.status(404).json({
+                            message: 'Old Password is incorrect'
+                        });
+                    }
+                } else {
+                    res.status(404).json({
+                        message: 'New Password and Confirm password do not match'
+                    });
+                }
+            }
+        });
+    } catch (error) {   
+        console.log(error);
+        res.status(400).json(error.message);
+}
 };
 
 

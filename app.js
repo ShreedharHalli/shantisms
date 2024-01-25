@@ -130,7 +130,7 @@ function whatsappFactoryFunction(clientId) {
   });
 
   return client;  // Return the client instance, not the Client class
-}
+};
 
 
 async function insertClientDetailstoCustDoc(customerId, connectedWhatsappNo, clientId) {
@@ -152,7 +152,7 @@ async function insertClientDetailstoCustDoc(customerId, connectedWhatsappNo, cli
           })
       }
     })
-}
+};
 
 
 
@@ -319,7 +319,7 @@ async function initiateAllWhatsappClients() {
       }
     };
   }
-}
+};
 
 
 
@@ -576,7 +576,7 @@ async function sendbulkWhatsapp(clientObj, tonums, message, messageType, file, f
       resolve(`wh,failed,'Wh is not connected',0,${idno}`);
     }
   });
-}
+};
 
 
 async function sendBulksms(user, tonums, message, tempid, idno, unicode, time, accusage, senderid, entityid) {
@@ -600,7 +600,7 @@ async function sendBulksms(user, tonums, message, tempid, idno, unicode, time, a
     }
   }
   return result.join('\n'); // Join the array elements with '\n' to create a multi-line string
-}
+};
 
 
 app.get('/api/getwhmsgstatus', async (req, res) => {
@@ -677,7 +677,7 @@ app.get('/api/iswaregistered', async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-})
+});
 
 
 

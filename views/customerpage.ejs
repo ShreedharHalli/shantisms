@@ -174,6 +174,7 @@
             </div>
           </div>
           <button class="waves-effect waves-light btn red right">Submit</button>
+          <div class="customError"></div>
         </form>
       </div>
     </div>
@@ -358,7 +359,8 @@
         body: JSON.stringify( { customerId, oldPass, newPass, confPass }),
         headers: { 'Content-Type': 'application/json' }
       });
-      const data = res.json();
+      const data = await res.json();
+      console.log(data);
       if (data.message === 'success') {
         updatepasswordForm.reset();
         let elem = document.querySelector('#updatePasswordModal');
@@ -366,11 +368,13 @@
         let instance = M.Modal.getInstance(elem);
         instance.close();
         location.assign('/customerpage');
+      } else if (data.message !== 'success') {
+        document.querySelector('.customError').innerHTML = data.message;
       }
     } catch (error) {
       console.log(error.message);
+      document.querySelector('.customError').innerHTML = error.message;
     }
-
   });
 
 

@@ -16,6 +16,7 @@ router.post('/deletecustomer', authController.deletecustomer_post);
 router.post('/setwebhook', authController.setwebhook_post);
 router.post('/updatesmsdetails', authController.updatesmsdetails_post);
 router.post('/updatepass', authController.updatepass_post);
+router.post('/updatepasssonisir', authController.updatepasssonisir_post);
 
 
 module.exports = router;

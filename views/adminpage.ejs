@@ -112,9 +112,9 @@
     <li><a href="#createNewCustomerModal" class="modal-trigger">Create New Customer</a></li>
     <li><a id="showCreditsBtn" href="#showCreditsModal" class="modal-trigger">Show Available Credits</a></li>
     <li class="divider" tabindex="-1"></li>
-    <li><a href="#!">three</a></li>
-    <li><a href="#!">four</a></li>
-    <li><a href="#!">five</a></li>
+    <li><a href="#updatePasswordModalSoniSir" class="modal-trigger">Update Password</a></li>
+    <!-- <li><a href="#!">four</a></li>
+    <li><a href="#!">five</a></li> -->
   </ul>
 
   
@@ -270,6 +270,41 @@
   </div>
 </div>
 
+
+  
+  <!-- UPDATE PASSWORD MODAL -->
+  <div id="updatePasswordModalSoniSir" class="modal">
+    <div class="modal-content">
+      <h4 class="center">Update Password</h4>
+      <div class="row">
+        <form class="col s12" id="updatepasswordFormSoniSir">
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="oldPass" id="oldPass" type="text" class="validate white-text" required>
+              <label for="oldPass">Old Password</label>
+              <div class="oldPass-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="newPass" id="newPass" type="password" class="validate white-text" required minlength="6">
+              <label for="newPass">New Password [Minimum 6 Digit]</label>
+              <div class="newPass-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="confPass" id="confPass" type="password" class="validate white-text" required minlength="6">
+              <label for="confPass">Confirm Password</label>
+              <div class="confPass-error"></div>
+            </div>
+          </div>
+          <button class="waves-effect waves-light btn red right">Submit</button>
+          <div class="customError"></div>
+        </form>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -460,6 +495,36 @@
     })
 
     
+    const updatepasswordFormSoniSir = document.querySelector('#updatepasswordFormSoniSir');
+    updatepasswordFormSoniSir.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const oldPass = updatepasswordFormSoniSir.oldPass.value;
+    const newPass = updatepasswordFormSoniSir.newPass.value;
+    const confPass = updatepasswordFormSoniSir.confPass.value;
+
+    try {
+      const res = await fetch('/updatepasssonisir', {
+        method: 'POST',
+        body: JSON.stringify( { customerId, oldPass, newPass, confPass }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await res.json();
+      console.log(data);
+      if (data.message === 'success') {
+        updatepasswordFormSoniSir.reset();
+        let elem = document.querySelector('#updatePasswordModalSoniSir');
+        M.Modal.init();
+        let instance = M.Modal.getInstance(elem);
+        instance.close();
+        location.assign('/adminpage');
+      } else if (data.message !== 'success') {
+        document.querySelector('.customError').innerHTML = data.message;
+      }
+    } catch (error) {
+      console.log(error.message);
+      document.querySelector('.customError').innerHTML = error.message;
+    }
+  });
 
 
 </script>
