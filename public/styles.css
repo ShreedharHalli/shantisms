@@ -91,3 +91,11 @@ body {
 #updatePasswordModalSoniSir {
   background: hsl(206, 9%, 15%);
 }
+
+#resetUserPasswordModal {
+  background: hsl(206, 9%, 15%);
+}
+
+#resetWASecretKeyModal {
+  background: hsl(206, 9%, 15%);
+}

@@ -27,6 +27,7 @@
           <th>Connected Whatsapp No</th>
           <th>Balance Credits</th>
           <th>Issue Credits</th>
+          <th>Reset Password</th>
           <th>Delete User</th>
           <th><a href="#createNewCustomerModal" class="btn-floating btn-large waves-effect waves-light red modal-trigger"><i class="material-icons">person_add</i></a></th>
           <!-- <th><button href="#qrCodeGenerateModal" class="red btn z-depth-5 modal-trigger">New</button></th> -->
@@ -54,9 +55,12 @@
                 <td>
                   <%= elem._id %>
                 </td>
-                <td>
-                  <%= elem.waSecretKey %>
+                <td class="modal-trigger resetWaSecretKeyBtn" href="#resetWASecretKeyModal">
+                  <a href="#" customerIdForResetWaKey="<%= elem._id %>">
+                    <%= elem.waSecretKey %>
+                  </a>
                 </td>
+                
   
                 <% 
                         // Initialize an empty array to store the connectedWano values
@@ -92,6 +96,9 @@
                           <td id="<%= elem._id %>"><i href="#issueCreditsToCustomerModal"
                               class="material-icons issueCreditsBtn modal-trigger">add_shopping_cart</i></td>
 
+                              <td id="<%= elem._id %>" data-fullname="<%= elem.fullName %>"><i href="#resetUserPasswordModal"
+                                class="material-icons resetUserPasswordBtn modal-trigger">fingerprint</i></td>
+
                           <td id="<%= elem._id %>" data-fullname="<%= elem.fullName %>"><i href="#deleteCustomerModal"
                               class="material-icons deleteCustomerBtn modal-trigger">delete_sweep</i></td>
                                       </tr>
@@ -107,6 +114,8 @@
 
 </div>
 
+
+
 <!-- Dropdown Structure -->
 <ul id='dropdown1' class='dropdown-content'>
     <li><a href="#createNewCustomerModal" class="modal-trigger">Create New Customer</a></li>
@@ -117,6 +126,55 @@
     <li><a href="#!">five</a></li> -->
   </ul>
 
+  <!-- RESET WHATSAPP SECRET KEY MODAL -->
+<div id="resetWASecretKeyModal" class="modal">
+  <div class="modal-content">
+    <h4 class="center">Reset Secret key</h4>
+    <div class="row">
+      <form class="col s12" id="resetWASecretKeyForm">
+        <div class="row">
+          <div class="input-field col s12">
+            <input name="secretKey" id="secretKey" type="text" customerIdInInput="" class="validate white-text" required minlength="6">
+            <label for="secretKey">Whatsapp Secret Key</label>
+            <!-- <div class="newPass-error"></div> -->
+          </div>
+        </div>
+        <button class="waves-effect waves-light btn red right">Submit</button>
+        <div class="customErrorresetWASecretKey"></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+
+  <!-- RESET PASSWORD MODAL -->
+<div id="resetUserPasswordModal" class="modal">
+  <div class="modal-content">
+    <h4 class="center">Reset Password</h4>
+    <div class="row">
+      <form class="col s12" id="resetUserPasswordForm">
+        <div class="row">
+          <div class="input-field col s12">
+            <input name="newPass" id="newPass" type="password" data-user-id="" class="validate white-text" required minlength="6">
+            <label id="custIdPlaceholder" class="" for="newPass">New Password [Minimum 6 Digit]</label>
+            <div class="newPass-error"></div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input name="confPass" id="confPass" type="password" class="validate white-text" required minlength="6">
+            <label for="confPass">Confirm Password</label>
+            <div class="confPass-error"></div>
+          </div>
+        </div>
+        <button class="waves-effect waves-light btn red right">Submit</button>
+        <div class="customErrorResetPass"></div>
+      </form>
+    </div>
+  </div>
+</div>
   
   <!-- CREATE NEW CUSTOMER MODAL -->
   <div id="createNewCustomerModal" class="modal">
@@ -280,13 +338,6 @@
         <form class="col s12" id="updatepasswordFormSoniSir">
           <div class="row">
             <div class="input-field col s12">
-              <input name="oldPass" id="oldPass" type="text" class="validate white-text" required>
-              <label for="oldPass">Old Password</label>
-              <div class="oldPass-error"></div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="input-field col s12">
               <input name="newPass" id="newPass" type="password" class="validate white-text" required minlength="6">
               <label for="newPass">New Password [Minimum 6 Digit]</label>
               <div class="newPass-error"></div>
@@ -381,7 +432,6 @@
       elem.addEventListener('click', function (event) {
         event.preventDefault();
         const customerId = this.parentNode.id;
-        console.log(customerId);
         const issueCreditsmodal = M.Modal.getInstance(document.querySelector('#issueCreditsToCustomerModal'));
         const customerIDHolder = document.querySelector('#customerID');
         customerIDHolder.value = customerId;
@@ -439,7 +489,7 @@
         const issueCreditsmodal = M.Modal.getInstance(document.querySelector('#deleteCustomerModal'));
         const customerIDHolder = document.querySelector('#deleteCustomerDislayName');
         customerIDHolder.classList = customerId;
-        customerIDHolder.innerText = `Customer Name : ${customerfullName}`;;
+        customerIDHolder.innerText = `Customer Name : ${customerfullName}`;
       });
     });
 
@@ -525,6 +575,97 @@
       document.querySelector('.customError').innerHTML = error.message;
     }
   });
+
+  const resetUserPasswordBtn = document.querySelectorAll('.resetUserPasswordBtn');
+  resetUserPasswordBtn.forEach((elem) => {
+  elem.addEventListener('click', function (event) {
+    event.preventDefault();
+    const customerId = this.parentNode.id;
+    const resetPasswordInput = document.getElementById('newPass');
+    resetPasswordInput.setAttribute('data-user-id', customerId)
+  })
+});
+
+
+  const resetUserPasswordForm = document.querySelector('#resetUserPasswordForm');
+  resetUserPasswordForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    
+    const newPass = resetUserPasswordForm.newPass.value;
+    const confPass = resetUserPasswordForm.confPass.value;
+    const customerIDHolder = document.getElementById("newPass");
+      const customerId = customerIDHolder.getAttribute('data-user-id');
+    try {
+
+        const res = await fetch('/resetpass', {
+          method: 'POST',
+          body: JSON.stringify({ customerId, newPass, confPass }),
+          headers: { 'Content-Type': 'application/json' },
+        });
+        const data = await res.json();
+        console.log(data);
+        if (data.message === 'success') {
+          resetUserPasswordForm.reset();
+          let elem = document.querySelector('#resetUserPasswordModal');
+          M.Modal.init();
+          let instance = M.Modal.getInstance(elem);
+          instance.close();
+          location.assign('/adminpage');
+        } else if (data.message !== 'success') {
+          document.querySelector('.customErrorResetPass').innerHTML = data.message;
+        }
+    } catch (error) {
+      console.log(error.message);
+      document.querySelector('.customErrorResetPass').innerHTML = error.message;
+    }
+
+  });
+
+
+  const resetWaSecretKeyBtn = document.querySelectorAll('.resetWaSecretKeyBtn');
+  resetWaSecretKeyBtn.forEach((elem) => {
+    elem.addEventListener('click', function(event) {
+      event.preventDefault();
+      const customerId = elem.getAttribute('customerIdForResetWaKey');
+      const resetSecretInput = document.getElementById('secretKey');
+      resetSecretInput.setAttribute('customerIdInInput', customerId);
+      const waSecretKeyValue = elem.innerText.trim();
+      document.querySelector('#secretKey').value = waSecretKeyValue;
+      M.updateTextFields();
+    });
+  });
+
+
+  const resetWASecretKeyForm = document.querySelector('#resetWASecretKeyForm');
+resetWASecretKeyForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const newWaKey = resetWASecretKeyForm.secretKey.value;
+  const currCustomerId = resetWASecretKeyForm.secretKey.getAttribute('customerIdInInput');
+  try {
+    const res = await fetch('/updatewasecretkey', {
+      method: 'POST',
+      body: JSON.stringify({ currCustomerId, newWaKey }),
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const data = await res.json();
+    console.log(data);
+    if (data.message === 'success') {
+      resetWASecretKeyForm.reset();
+      let elem = document.querySelector('#resetWASecretKeyModal');
+      M.Modal.init();
+      let instance = M.Modal.getInstance(elem);
+      instance.close();
+      location.assign('/adminpage');
+    } else if (data.message !== 'success') {
+      document.querySelector('.customErrorresetWASecretKey').innerHTML = error.message;
+    }
+  } catch (error) {
+    console.log(error.message);
+    document.querySelector('.customErrorresetWASecretKey').innerHTML = error.message;
+  }
+});
+
+
 
 
 </script>

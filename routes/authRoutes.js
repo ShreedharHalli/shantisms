@@ -17,6 +17,8 @@ router.post('/setwebhook', authController.setwebhook_post);
 router.post('/updatesmsdetails', authController.updatesmsdetails_post);
 router.post('/updatepass', authController.updatepass_post);
 router.post('/updatepasssonisir', authController.updatepasssonisir_post);
+router.post('/resetpass', authController.resetpass_post);
+router.post('/updatewasecretkey', authController.updatewasecretkey_post);
 
 
 module.exports = router;

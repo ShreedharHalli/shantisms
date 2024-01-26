@@ -274,6 +274,48 @@ module.exports.updatepasssonisir_post = async (req, res) => {
 }
 };
 
+module.exports.resetpass_post = async (req, res) => {
+    const { customerId, newPass, confPass } = req.body;
+    try {
+        User.findOne({_id: customerId})
+        .then(async (user) => {
+            if (!user) {
+                res.status(404).json({
+                    message: 'User not found'
+                });
+            } else {
+                if (newPass === confPass) {
+                    const salt = await bcrypt.genSalt(10);
+                        const hashedPass = await bcrypt.hash(newPass, salt);
+                        const updatedPass = await User.updateOne({ _id: customerId }, { $set: { password: hashedPass } });
+                        res.status(200).json({ message: 'success' });
+                } else {
+                    res.status(404).json({
+                        message: 'New Password and Confirm password do not match'
+                    });
+                }
+            }
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error.message);
+    }
+};
+
+
+module.exports.updatewasecretkey_post = async (req, res) => {
+    const { currCustomerId, newWaKey } = req.body;
+    try {
+        const updatedSecretKey = await User.updateOne({ _id: currCustomerId }, { $set: { waSecretKey: newWaKey } } );
+        res.status(200).json({
+            message: 'success'
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error.message);
+    }
+};
+
 
 
 
