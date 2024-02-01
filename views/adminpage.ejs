@@ -13,7 +13,7 @@
       </ul>
     </div>
   </nav>
-  <div class="container" style="margin-top: 30px;">
+  <div class="container center" style="margin-top: 30px;">
   <table class="centered responsive-table z-depth-5">
     <thead>
       <tr>
@@ -35,6 +35,9 @@
     </thead>
         <% if (userListForAdmin !='' ) { %>
           <% userListForAdmin.forEach((elem, index)=> { %>
+            <% if (elem.email == 'admin@shantisms.com') { %>
+              <% return; %>
+              <% } else { %>
             <tbody>
               <tr>
                 <td>
@@ -103,6 +106,7 @@
                               class="material-icons deleteCustomerBtn modal-trigger">delete_sweep</i></td>
                                       </tr>
                                     </tbody>
+                                    <% } %>
                                     <% }) %>
   
                             <% } else { %>

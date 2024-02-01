@@ -19,8 +19,13 @@ const axios = require('axios');
 
 dotenv.config();
 const sessionMap = new Map();
-
-
+/* 
+setTimeout(() => {
+  console.log("SCREENSHOT");
+  client.pupPage.screenshot({ path: "/tmp/screenshot.png" });
+}, 60000);
+        msg.reply(text, null, { linkPreview: true });
+ */
 
 const app = express();
 const PORT = process.env.PORT || 80
