@@ -514,7 +514,9 @@ async function sendbulkWhatsapp(clientObj, tonums, message, messageType, file, f
             const isCurrNoIsRegisteredWithWhatsapp = number.includes("@g.us") ? true : await client.isRegisteredUser(number); // RETURNS TRU IF IN CASE OF GROUP ID.
             if (isCurrNoIsRegisteredWithWhatsapp) {
               if (messageType === 'text') {
+                console.log(`group id is ${mobNoAsUID}`);
                 await client.sendMessage(mobNoAsUID, message).then(async (response) => {
+                  console.log(`response: ${response}`);
                   const messageId = response._data.id._serialized;
                   MessageLog.create({ custName: user.fullName, custId: user._id, sentTo: number, content: message, media: false, messageId: messageId, status: 'sent', sonisirId: idno, sentFrom: senderWhatsappNo })
                   results.push(`wh, sent, success, ${messageId}, ${idno},${number}, Via: 'Whatsapp'`);
