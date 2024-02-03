@@ -516,7 +516,6 @@ async function sendbulkWhatsapp(clientObj, tonums, message, messageType, file, f
               if (messageType === 'text') {
                 console.log(`group id is ${mobNoAsUID}`);
                 await client.sendMessage(mobNoAsUID, message).then(async (response) => {
-                  console.log(`response: ${JSON.stringify(response)}`);
                   const messageId = response._data.id._serialized;
                   MessageLog.create({ custName: user.fullName, custId: user._id, sentTo: number, content: message, media: false, messageId: messageId, status: 'sent', sonisirId: idno, sentFrom: senderWhatsappNo })
                   results.push(`wh, sent, success, ${messageId}, ${idno},${number}, Via: 'Whatsapp'`);
@@ -722,6 +721,7 @@ app.get('/api/getgrpids', async (req, res) => {
                 });
               } else {
                 groups.forEach((group, i) => {
+                  console.log(`this is group data ${JSON.stringify(group)}`);
                   results.push(`Group Name: ${group.name}, ID: ${group.id._serialized}`);
                 });
                 res.status(200).json({ 
