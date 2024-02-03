@@ -510,7 +510,7 @@ async function sendbulkWhatsapp(clientObj, tonums, message, messageType, file, f
       if (messageType === 'text' || (messageType === 'file' && isFileFormatSupported) || (messageType === 'url' && isURLFileFormatSupported)) {
         try {
           for (const number of mobArr) {
-            const mobNoAsUID = `${number}@c.us`;
+            const mobNoAsUID = number.includes("@g.us") ? number : `${number}@c.us`; // CHECK IF CURRENT NUMBER IS GROUP ID
             const isCurrNoIsRegisteredWithWhatsapp = await client.isRegisteredUser(number);
             if (isCurrNoIsRegisteredWithWhatsapp) {
               if (messageType === 'text') {
@@ -854,12 +854,16 @@ function convertStringToArray(str) {
   // Remove any empty values from the array
   let newArr = arr.filter(value => value !== "")
 
-  // Iterate through the array and check if each string starts with +91
+  // Iterate through the array and check if each string contains "@g.us"
   for (let i = 0; i < newArr.length; i++) {
-    if (!newArr[i].startsWith("91")) {
+    // CHECK IF IT HAS GROUP IDS
+    if (!newArr[i].includes("@g.us")) {
+      // If it doesn't contain "@g.us", prepend "91" to the string
       newArr[i] = "91" + newArr[i]
     }
+    // If it contains "@g.us", leave it as it is
   }
+
   return newArr
 }
 
