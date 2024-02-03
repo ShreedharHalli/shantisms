@@ -690,6 +690,76 @@ app.get('/api/iswaregistered', async (req, res) => {
 });
 
 
+app.get('/api/getgrpids', async (req, res) => {
+  const { wacustid, wakey, extrctgrpidfrmnum } = req.body;
+  // check if the number starts with 91 and if not attach it.
+  const fromNum = extrctgrpidfrmnum.toString().startsWith("91") ? extrctgrpidfrmnum : "91" + extrctgrpidfrmnum;
+  let results = [];
+  User.findById(wacustid)
+  .then(async (user) => {
+    if (!user || user.waSecretKey === wakey.toString()) {
+      // Handle case where user is not found
+      res.status(404).json({
+        status: false,
+        response: "Customer id or Secret Key not found"
+      });
+    } else {
+      for (const device of user.connectedWhatsAppDevices) {
+        if (device.connectedWano === fromNum) {
+        const clientId = device.client;
+          const clientObj = sessionMap.get(clientId);
+          const client = clientObj.client;
+          const state = await client.getState();
+          if (state === "CONNECTED") {
+            client.getChats().then(async chats => {
+              const groups = chats.filter(chat => !chat.isReadOnly && chat.isGroup);
+              if (groups.length == 0) {
+                res.status(404).json({
+                  status: false,
+                  response: "You have no group yet."
+                });
+              } else {
+                groups.forEach((group, i) => {
+                  results.push(`Group Name: ${group.name}, ID: ${group.id._serialized}`);
+                });
+                res.status(200).json({ 
+                  results: results.join('\n')
+                 });
+              }
+            });
+            break;
+          }
+        } else {
+          res.status(404).json({
+            status: false,
+            response: "Invalid Number"
+          });
+          break; // Exit the loop after finding the connected device
+        }
+      }
+    }
+  });
+});
+
+
+
+/* 
+client.getChats().then(async chats => {
+          const groups = chats.filter(chat => !chat.isReadOnly && chat.isGroup);
+          if (groups.length == 0) {
+           await msg.reply('You have no group yet.');
+          } else {
+            let groupsMsg = '*All active groups listed below:*\n\n';
+            groups.forEach((group, i) => {
+              groupsMsg += `ID: ${group.id._serialized}\nName: ${group.name}\n\n`;
+            });
+            await msg.reply(groupsMsg)
+          }
+        });
+
+
+*/
+
 
 
 
