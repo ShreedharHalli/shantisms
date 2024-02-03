@@ -252,9 +252,9 @@ async function initiateAllWhatsappClients() {
           switch (ack) {
             case 3:
               // The message was read
-              console.log('The message was SEEN', msg.body, 'and the id is ' + msg._data.id._serialized);
+              // console.log('The message was SEEN', msg.body, 'and the id is ' + msg._data.id._serialized);
               const setMsgStatusToSeen = await MessageLog.updateOne({ messageId: msg._data.id._serialized }, { $set: { status: 'Seen' } });
-              console.log(setMsgStatusToSeen);
+              // console.log(setMsgStatusToSeen);
               // Update message doc here
               break;
             // Add more cases as needed
@@ -270,9 +270,9 @@ async function initiateAllWhatsappClients() {
             case 2:
               // Handle ACK_DEVICE
               // Delivered event
-              console.log('The message was DELIVERED', msg.body, 'and the id is ' + msg._data.id._serialized);
+              // console.log('The message was DELIVERED', msg.body, 'and the id is ' + msg._data.id._serialized);
               const setMsgStatusToDelivered = await MessageLog.updateOne({ messageId: msg._data.id._serialized }, { $set: { status: 'Delivered' } });
-              console.log(setMsgStatusToDelivered);
+              // console.log(setMsgStatusToDelivered);
               break;
             case 4:
               // Handle ACK_PLAYED
@@ -511,7 +511,7 @@ async function sendbulkWhatsapp(clientObj, tonums, message, messageType, file, f
         try {
           for (const number of mobArr) {
             const mobNoAsUID = number.includes("@g.us") ? number : `${number}@c.us`; // CHECK IF CURRENT NUMBER IS GROUP ID
-            const isCurrNoIsRegisteredWithWhatsapp = await client.isRegisteredUser(number);
+            const isCurrNoIsRegisteredWithWhatsapp = number.includes("@g.us") ? true : await client.isRegisteredUser(number); // RETURNS TRU IF IN CASE OF GROUP ID.
             if (isCurrNoIsRegisteredWithWhatsapp) {
               if (messageType === 'text') {
                 await client.sendMessage(mobNoAsUID, message).then(async (response) => {
