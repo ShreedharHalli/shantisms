@@ -510,6 +510,7 @@ async function sendbulkWhatsapp(clientObj, tonums, message, messageType, file, f
       if (messageType === 'text' || (messageType === 'file' && isFileFormatSupported) || (messageType === 'url' && isURLFileFormatSupported)) {
         try {
           for (const number of mobArr) {
+            console.log(`number is ${number}`);
             const mobNoAsUID = number.includes("@g.us") ? number : `${number}@c.us`; // CHECK IF CURRENT NUMBER IS GROUP ID
             const isCurrNoIsRegisteredWithWhatsapp = number.includes("@g.us") ? true : await client.isRegisteredUser(number); // RETURNS TRU IF IN CASE OF GROUP ID.
             if (isCurrNoIsRegisteredWithWhatsapp) {
