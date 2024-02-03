@@ -267,11 +267,11 @@
 
   socket.on('clientIsAuthenticated', () => {
      qrcodeContainer.innerHTML = `<img src="" alt="QR Code" style="width: 40%; height: 40%;" />`;
+     location.assign('/customerpage');
     // Initialize the modal properly
     let whatsappConnectionStatusModal = document.querySelector('#qrCodeGenerateModal');
     let instance = M.Modal.init(whatsappConnectionStatusModal);
     instance.close();
-    location.assign('/customerpage');
   });
 
 

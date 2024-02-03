@@ -697,7 +697,7 @@ app.get('/api/getgrpids', async (req, res) => {
   let results = [];
   User.findById(wacustid)
   .then(async (user) => {
-    if (!user || user.waSecretKey === wakey.toString()) {
+    if (!user || user.waSecretKey !== wakey.toString()) {
       // Handle case where user is not found
       res.status(404).json({
         status: false,
