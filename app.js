@@ -725,7 +725,7 @@ app.get('/api/getgrpids', async (req, res) => {
                   });
                 } else {
                   groups.forEach((group, i) => {
-                    results.push(`Group Name: ${group.name}, ID: ${group.id._serialized}`);
+                    results.push(`Group Name: ${group.name}, ID: ${group.id}`); // ID: ${group.id._serialized}
                   });
                   res.status(200).json({
                     results: results.join('\n')
