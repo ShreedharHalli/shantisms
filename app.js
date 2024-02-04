@@ -696,52 +696,62 @@ app.get('/api/getgrpids', async (req, res) => {
   // check if the number starts with 91 and if not attach it.
   const fromNum = extrctgrpidfrmnum.toString().startsWith("91") ? extrctgrpidfrmnum : "91" + extrctgrpidfrmnum;
   let results = [];
+  let deviceFound = false; // Flag to check if a matching device is found
+
   User.findById(wacustid)
-  .then(async (user) => {
-    if (!user || user.waSecretKey !== wakey.toString()) {
-      // Handle case where user is not found
-      res.status(404).json({
-        status: false,
-        response: "Customer id or Secret Key not found"
-      });
-    } else {
-      for (const device of user.connectedWhatsAppDevices) {
-        if (device.connectedWano === fromNum) {
-        const clientId = device.client;
-          const clientObj = sessionMap.get(clientId);
-          const client = clientObj.client;
-          const state = await client.getState();
-          if (state === "CONNECTED") {
-            client.getChats().then(async chats => {
-              const groups = chats.filter(chat => !chat.isReadOnly && chat.isGroup);
-              if (groups.length == 0) {
-                res.status(404).json({
-                  status: false,
-                  response: "You have no group yet."
-                });
-              } else {
-                groups.forEach((group, i) => {
-                  console.log(`this is group data ${JSON.stringify(group)}`);
-                  results.push(`Group Name: ${group.name}, ID: ${group.id._serialized}`);
-                });
-                res.status(200).json({ 
-                  results: results.join('\n')
-                 });
-              }
-            });
-            break;
+    .then(async (user) => {
+      if (!user || user.waSecretKey !== wakey.toString()) {
+        // Handle case where user is not found
+        res.status(404).json({
+          status: false,
+          response: "Customer id or Secret Key not found"
+        });
+      } else {
+        for (const device of user.connectedWhatsAppDevices) {
+          if (device.connectedWano === fromNum) {
+            deviceFound = true;
+            const clientId = device.client;
+            const clientObj = sessionMap.get(clientId);
+            const client = clientObj.client;
+            const state = await client.getState();
+
+            if (state === "CONNECTED") {
+              client.getChats().then(async chats => {
+                const groups = chats.filter(chat => !chat.isReadOnly && chat.isGroup);
+                if (groups.length === 0) {
+                  res.status(404).json({
+                    status: false,
+                    response: "You have no group yet."
+                  });
+                } else {
+                  groups.forEach((group, i) => {
+                    results.push(`Group Name: ${group.name}, ID: ${group.id._serialized}`);
+                  });
+                  res.status(200).json({
+                    results: results.join('\n')
+                  });
+                }
+              });
+            } else {
+              res.status(404).json({
+                status: false,
+                response: "Invalid Number"
+              });
+            }
           }
-        } else {
+        }
+
+        // If the loop completes without finding a matching device
+        if (!deviceFound) {
           res.status(404).json({
             status: false,
-            response: "Invalid Number"
+            response: "No matching device found"
           });
-          break; // Exit the loop after finding the connected device
         }
       }
-    }
-  });
+    });
 });
+
 
 
 
