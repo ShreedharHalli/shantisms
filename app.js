@@ -568,8 +568,8 @@ async function sendbulkWhatsapp(clientObj, tonums, message, messageType, file, f
                 results.push(`sms, ${error.message}`);
               }
             }
-            // const delay = Math.floor(Math.random() * (1000 - 500 + 1)) + 500;
-            // await sleep(delay);
+            const delay = Math.floor(Math.random() * (1000 - 500 + 1)) + 500;
+            await sleep(delay);
           }
           resolve(results.join('\n')); // Join the array elements with '\n' to create a multi-line string
         } catch (error) {
@@ -753,24 +753,6 @@ app.get('/api/getgrpids', async (req, res) => {
 });
 
 
-
-
-/* 
-client.getChats().then(async chats => {
-          const groups = chats.filter(chat => !chat.isReadOnly && chat.isGroup);
-          if (groups.length == 0) {
-           await msg.reply('You have no group yet.');
-          } else {
-            let groupsMsg = '*All active groups listed below:*\n\n';
-            groups.forEach((group, i) => {
-              groupsMsg += `ID: ${group.id._serialized}\nName: ${group.name}\n\n`;
-            });
-            await msg.reply(groupsMsg)
-          }
-        });
-
-
-*/
 
 
 
