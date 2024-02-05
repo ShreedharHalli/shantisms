@@ -609,147 +609,174 @@ async function sendBulksms(user, tonums, message, tempid, idno, unicode, time, a
 };
 
 
+
 app.get('/api/getwhmsgstatus', async (req, res) => {
-  const { wacustid, wapostids } = req.body;
-  const wapostidsArr = wapostids.split(', ');
-  const results = [];
   try {
-    User.findById(wacustid)
-    .then(async (user) => {
+      const { wacustid, wapostids } = req.body;
+      const wapostidsArr = wapostids.split(', ');
+      const results = [];
+
+      const user = await User.findById(wacustid);
+
       if (!user) {
-        // Handle case where user is not found
-        res.status(404).json({
-          status: false,
-          response: "Customer Not Found"
-        });
+          // Handle case where user is not found
+          res.status(404).json({
+              status: false,
+              response: "Customer Not Found"
+          });
       } else {
-        for (const wapostid of wapostidsArr) {
-          const message = await MessageLog.findOne({ custId: wacustid, messageId: wapostid });
-          if (message) {
-            const options = { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false };
-            const dateFormatter = new Intl.DateTimeFormat('en-US', options);
-            const formattedDate = dateFormatter.format(message.timeStamp);
+          for (const wapostid of wapostidsArr) {
+              const message = await MessageLog.findOne({ custId: wacustid, messageId: wapostid });
 
-            const dateWithoutComma = formattedDate.replace(/,/g, '');
+              if (message) {
+                  const options = { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false };
+                  const dateFormatter = new Intl.DateTimeFormat('en-US', options);
+                  const formattedDate = dateFormatter.format(message.timeStamp);
 
-            results.push(`Timestamp: ${ dateWithoutComma }, Sent From: ${message.sentFrom}, Sent To: ${message.sentTo}, wapostid: ${wapostid}, Status: ${message.status}`);
-          } else {
-            results.push(`Invalid wapostid: ${wapostid}`);
+                  const dateWithoutComma = formattedDate.replace(/,/g, '');
+
+                  results.push(`Timestamp: ${dateWithoutComma}, Sent From: ${message.sentFrom}, Sent To: ${message.sentTo}, wapostid: ${wapostid}, Status: ${message.status}`);
+              } else {
+                  results.push(`Invalid wapostid: ${wapostid}`);
+              }
           }
-        }
-        res.status(200).json({
-          Response: results.join('\n')
-        });
+          res.status(200).json({
+              Response: results.join('\n')
+          });
       }
-    });
   } catch (error) {
-    res.status(error.status).json({ message: error.message });
+      if (error.message.includes("Cast to ObjectId")) {
+          res.status(404).json({
+              status: false,
+              response: "Invalid customer wacustid"
+          });
+      } else {
+          res.status(400).json({
+              status: false,
+              message: error.message
+          });
+      }
   }
 });
 
 
+
 app.get('/api/iswaregistered', async (req, res) => {
-  const { wacustid, wanos } = req.body;
-  const results = [];
   try {
-    User.findById(wacustid)
-    .then(async (user) => {
+      const { wacustid, wanos } = req.body;
+      const results = [];
+
+      const user = await User.findById(wacustid);
+
       if (!user) {
-        // Handle case where user is not found
-        res.status(404).json({
-          status: false,
-          response: "Customer Not Found"
-        });
+          // Handle case where user is not found
+          res.status(404).json({
+              status: false,
+              response: "Customer Not Found"
+          });
       } else {
-        for (const device of user.connectedWhatsAppDevices) {
-          const clientId = device.client;
-          const clientObj = sessionMap.get(clientId);
-          const client = clientObj.client;
-          const state = await client.getState();
-          if (state === "CONNECTED") {
-            const nos = convertStringToArray(wanos);
-            for (const wano of nos) {
-              const isRegistered = await client.isRegisteredUser(wano);
-              if (isRegistered) {
-                results.push(`Mob: ${wano}, iswaregistered: True`);
+          for (const device of user.connectedWhatsAppDevices) {
+              const clientId = device.client;
+              const clientObj = sessionMap.get(clientId);
+              const client = clientObj.client;
+              const state = await client.getState();
+
+              if (state === "CONNECTED") {
+                  const nos = convertStringToArray(wanos);
+                  for (const wano of nos) {
+                      const isRegistered = await client.isRegisteredUser(wano);
+                      results.push(`Mob: ${wano}, iswaregistered: ${isRegistered}`);
+                  }
               }
-              else {
-                results.push(`Mob: ${wano}, iswaregistered: False`);
-              }
-            }
+              break; // Exit the loop after finding the connected device
           }
-          break; // Exit the loop after finding the connected device
-        };
       }
+
       res.status(200).json({
-        Response: results.join('\n')
+          Response: results.join('\n')
       });
-    })
   } catch (error) {
-    res.status(400).json({ message: error.message });
+      if (error.message.includes("Cast to ObjectId")) {
+          res.status(404).json({
+              status: false,
+              response: "Invalid customer wacustid"
+          });
+      } else {
+          res.status(400).json({
+              status: false,
+              message: error.message
+          });
+      }
   }
 });
 
 
 app.get('/api/getgrpids', async (req, res) => {
-  const { wacustid, wakey, extrctgrpidfrmnum } = req.body;
-  // check if the number starts with 91 and if not attach it.
-  const fromNum = extrctgrpidfrmnum.toString().startsWith("91") ? extrctgrpidfrmnum : "91" + extrctgrpidfrmnum;
-  let results = [];
-  let deviceFound = false; // Flag to check if a matching device is found
-
-  User.findById(wacustid)
-    .then(async (user) => {
+  try {
+      const { wacustid, wakey, extrctgrpidfrmnum } = req.body;
+      // check if the number starts with 91 and if not attach it.
+      const fromNum = extrctgrpidfrmnum.toString().startsWith("91") ? extrctgrpidfrmnum : "91" + extrctgrpidfrmnum;
+      let results = [];
+      let deviceFound = false; // Flag to check if a matching device is found
+      const user = await User.findById(wacustid);
       if (!user || user.waSecretKey !== wakey.toString()) {
-        // Handle case where user is not found
-        res.status(404).json({
-          status: false,
-          response: "Customer id or Secret Key not found"
-        });
-      } else {
-        for (const device of user.connectedWhatsAppDevices) {
-          if (device.connectedWano === fromNum) {
-            deviceFound = true;
-            const clientId = device.client;
-            const clientObj = sessionMap.get(clientId);
-            const client = clientObj.client;
-            const state = await client.getState();
-
-            if (state === "CONNECTED") {
-              client.getChats().then(async chats => {
-                const groups = chats.filter(chat => !chat.isReadOnly && chat.isGroup);
-                if (groups.length === 0) {
-                  res.status(404).json({
-                    status: false,
-                    response: "You have no group yet."
-                  });
-                } else {
-                  groups.forEach((group, i) => {
-                    results.push(`Group Name: ${group.name}, ID: ${group.id._serialized}`);
-                  });
-                  res.status(200).json({
-                    results: results.join('\n')
-                  });
-                }
-              });
-            } else {
-              res.status(404).json({
-                status: false,
-                response: "Invalid Number"
-              });
-            }
-          }
-        }
-
-        // If the loop completes without finding a matching device
-        if (!deviceFound) {
           res.status(404).json({
-            status: false,
-            response: "No matching device found"
+              status: false,
+              response: "Customer id or Secret Key not found"
           });
-        }
+      } else {
+          for (const device of user.connectedWhatsAppDevices) {
+              if (device.connectedWano === fromNum) {
+                  deviceFound = true;
+                  const clientId = device.client;
+                  const clientObj = sessionMap.get(clientId);
+                  const client = clientObj.client;
+                  const state = await client.getState();
+                  if (state === "CONNECTED") {
+                      const chats = await client.getChats();
+                      const groups = chats.filter(chat => !chat.isReadOnly && chat.isGroup);
+                      if (groups.length === 0) {
+                          res.status(404).json({
+                              status: false,
+                              response: "You have no group yet."
+                          });
+                      } else {
+                          groups.forEach((group, i) => {
+                              results.push(`Group Name: ${group.name}, ID: ${group.id._serialized}`);
+                          });
+                          res.status(200).json({
+                              results: results.join('\n')
+                          });
+                      }
+                  } else {
+                      res.status(404).json({
+                          status: false,
+                          response: "Invalid Number"
+                      });
+                  }
+              }
+          }
+          // If the loop completes without finding a matching device
+          if (!deviceFound) {
+              res.status(404).json({
+                  status: false,
+                  response: "No matching device found"
+              });
+          }
       }
-    });
+  } catch (error) {
+      if (error.message.includes("Cast to ObjectId")) {
+          res.status(404).json({
+              status: false,
+              response: "Invalid wacustid"
+          });
+      } else {
+          res.status(400).json({
+              status: false,
+              response: error.message
+          });
+      }
+  }
 });
 
 
