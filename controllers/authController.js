@@ -316,6 +316,29 @@ module.exports.updatewasecretkey_post = async (req, res) => {
     }
 };
 
+// GET AVAILABLE CREDITS THROUGH ENDPOINT
+module.exports.balwacrdts_get = async (req, res) => {
+    const { customerId, wakey } = req.body;
+    try {
+        User.findById(customerId)
+        .then((user) => {
+            if (!user && user.waSecretKey !== wakey.toString()) {
+                res.status(404).json({
+                    message: 'Customer not found or Invalid wakey key'
+                });
+            } else {
+                res.status(200).json({
+                    message: user.AvailableCredits,
+                })
+             }
+        })
+    } catch (error) {
+        res.status(400).json({
+            message: error.message
+        });
+    }
+};
+
 
 
 

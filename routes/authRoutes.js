@@ -19,6 +19,7 @@ router.post('/updatepass', authController.updatepass_post);
 router.post('/updatepasssonisir', authController.updatepasssonisir_post);
 router.post('/resetpass', authController.resetpass_post);
 router.post('/updatewasecretkey', authController.updatewasecretkey_post);
+router.get('/balwacrdts', authController.balwacrdts_get);
 
 
 module.exports = router;
