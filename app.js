@@ -792,14 +792,13 @@ app.get('/automation/missedcallalert/*', async (req, res) => {
   const client = clientObj.client;
     const state = await client.getState();
     let message = ''
-    message += 'Dear Sir, ' + '/n';
-    message += 'Thank you for calling our Relationship Manager. ' +  '/n';
-    message += 'Also we are sorry he missed your call that must be busy attending valued customer as you.' + '/n';
-    message += 'Rest assured our Relationship manager will call you back within short period of time.' + '/n';
-    message += 'Senior Relationship Manager : Mr. Shreedhar : 91 78878 92244' + '/n';
+    message += 'Dear Sir, ' + '\n';
+    message += 'Thank you for calling our Relationship Manager. Shreedhar' +  '\n';
+    message += 'We apologize that he missed your call; he must be busy attending to valued customers, just like you.' + '\n';
+    message += 'Rest assured, our Relationship Manager will call you back within a short period of time.' + '\n';
+    message += 'Senior Relationship Manager : Mr. Sudhir Meghache : 91 78878 92244' + '\n';
     if (state === 'CONNECTED') {
       await client.sendMessage(`${phoneWithoutSymbol}@c.us`, message).then(async (response) => {
-        console.log(response);
       }).catch(err => {
         console.log(err);
       });
