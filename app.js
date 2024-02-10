@@ -782,7 +782,7 @@ app.get('/api/getgrpids', async (req, res) => {
 
 
 
-app.get('api/missedcallalert', async (req, res) => {
+app.post('api/missedcallalert', async (req, res) => {
   console.log('missed call alert');
   try {
     console.log(req.body);
