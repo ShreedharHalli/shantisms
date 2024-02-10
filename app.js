@@ -782,12 +782,14 @@ app.get('/api/getgrpids', async (req, res) => {
 
 
 
-app.post('api/missedcallalert', async (req, res) => {
+app.get('api/missedcallalert', async (req, res) => {
   console.log('missed call alert');
-  const { user, numbertosend } = req.body;
-  console.log(user, numbertosend);
+  const params = req.params;
+  console.log(params);
+  /*const { user, numbertosend } = r eq.body;
+  console.log(user, numbertosend); */
   try {
-    console.log(req.body);
+    /* console.log(req.body);
   const cleanedNumberToSend = num.startsWith('+') ? num.substring(1) : num;
   const client = 'session-65be095699b95324ad6794a0-xMiIn9';
     const state = await client.getState();
@@ -804,7 +806,7 @@ app.post('api/missedcallalert', async (req, res) => {
       }).catch(err => {
         console.log(err);
       });
-    }
+    } */
   } catch (error) {
     console.log(error.message);
   }
