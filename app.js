@@ -782,10 +782,10 @@ app.get('/api/getgrpids', async (req, res) => {
 
 
 
-app.get('api/missedcallalert', async (req, res) => {
+app.get('/automation/missedcallalert/*', async (req, res) => {
   console.log('missed call alert');
-  const params = req.params;
-  console.log(params);
+  const phoneNumber = req.url.replace('/automation/missedcallalert/', '');
+  console.log('phone number: ' + phoneNumber);
   /*const { user, numbertosend } = r eq.body;
   console.log(user, numbertosend); */
   try {
