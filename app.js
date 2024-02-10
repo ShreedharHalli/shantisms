@@ -783,6 +783,8 @@ app.get('/api/getgrpids', async (req, res) => {
 
 
 app.post('api/missedcallalert', async (req, res) => {
+  try {
+    console.log(req.body);
   console.log('missed call alert');
   const { user, num } = req.body;
   const cleanedNumberToSend = num.startsWith('+') ? num.substring(1) : num;
@@ -803,6 +805,9 @@ app.post('api/missedcallalert', async (req, res) => {
         console.log(err);
       });
     }
+  } catch (error) {
+    console.log(error.message);
+  }
 });
 
 
