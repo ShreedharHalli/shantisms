@@ -786,7 +786,9 @@ app.get('/automation/missedcallalert/*', async (req, res) => {
   console.log('missed call alert');
   const phoneNumber = req.url.replace('/automation/missedcallalert/', '');
   try {
-  const client = 'session-65be095699b95324ad6794a0-xMiIn9';
+  const id = '65be095699b95324ad6794a0-xMiIn9';
+  const clientObj = sessionMap.get(id);
+  const client = clientObj.client;
     const state = await client.getState();
     const message = ''
     message += 'Dear Sir, ' + '/n';
