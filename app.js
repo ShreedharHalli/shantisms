@@ -785,12 +785,7 @@ app.get('/api/getgrpids', async (req, res) => {
 app.get('/automation/missedcallalert/*', async (req, res) => {
   console.log('missed call alert');
   const phoneNumber = req.url.replace('/automation/missedcallalert/', '');
-  console.log('phone number: ' + phoneNumber);
-  /*const { user, numbertosend } = r eq.body;
-  console.log(user, numbertosend); */
   try {
-    /* console.log(req.body);
-  const cleanedNumberToSend = num.startsWith('+') ? num.substring(1) : num;
   const client = 'session-65be095699b95324ad6794a0-xMiIn9';
     const state = await client.getState();
     const message = ''
@@ -801,12 +796,12 @@ app.get('/automation/missedcallalert/*', async (req, res) => {
     message += 'Senior Relationship Manager : Mr. Shreedhar : 91 78878 92244' + '/n';
     if (state === 'CONNECTED') {
       console.log('client is connected');
-      await client.sendMessage(`${cleanedNumberToSend}@c.us`, message).then(async (response) => {
+      await client.sendMessage(`${phoneNumber}@c.us`, message).then(async (response) => {
         console.log(response);
       }).catch(err => {
         console.log(err);
       });
-    } */
+    }
   } catch (error) {
     console.log(error.message);
   }
