@@ -780,20 +780,24 @@ app.get('/api/getgrpids', async (req, res) => {
 });
 
 
+
+
 app.post('api/missedcallalert', async (req, res) => {
-  const { user, numbertosend } = req.body;
-  console.log(user, numbertosend);
+  console.log('missed call alert');
+  const { user, num } = req.body;
+  const cleanedNumberToSend = num.startsWith('+') ? num.substring(1) : num;
+  console.log(user, cleanedNumberToSend);
   const client = 'session-65b3333929eae8a494f8a9cd';
     const state = await client.getState();
     const message = ''
     message += 'Dear Sir, ' + '/n';
-    message += 'Thank you for calling our Relationship Manager.' + '/n';
+    message += 'Thank you for calling our Relationship Manager. ' + user + '/n';
     message += 'Also we are sorry he missed your call that must be busy attending valued customer as you.' + '/n';
     message += 'Rest assured our Relationship manager will call you back within short period of time.' + '/n';
     message += 'Senior Relationship Manager : Mr. Shreedhar : 91 78878 92244' + '/n';
     if (state === 'CONNECTED') {
       console.log('client is connected');
-      await client.sendMessage(`91${numbertosend}@c.us`, message).then(async (response) => {
+      await client.sendMessage(`${cleanedNumberToSend}@c.us`, message).then(async (response) => {
         console.log(response);
       }).catch(err => {
         console.log(err);
