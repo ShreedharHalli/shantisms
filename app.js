@@ -780,7 +780,7 @@ app.get('/api/getgrpids', async (req, res) => {
 });
 
 
-
+/* 
 
 app.get('/automation/missedcallalert/*', async (req, res) => {
   const phoneNumber = req.url.replace('/automation/missedcallalert/', '');
@@ -807,7 +807,7 @@ app.get('/automation/missedcallalert/*', async (req, res) => {
     console.log(error.message);
   }
 });
-
+ */
 
 
 
