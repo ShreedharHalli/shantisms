@@ -156,7 +156,7 @@ module.exports.setwebhook_post = async (req, res) => {
 module.exports.showAvailableCreditsToSoniSir_post = async (req, res) => {
     const { customerId } = req.body; // work pending on this
     try {
-    const soniSirDoc = await User.findOne({ _id: '659e94f92259ef5e6f262d4a' })
+    const soniSirDoc = await User.findOne({ _id: '65c97e5a1f433452b59de516' })
     const soniSirCredits = soniSirDoc.AvailableCredits;
     const allDocs = await User.find({  }).select('AvailableCredits').exec();
     const totalCustomerCredits = allDocs.reduce((total, user) => total + user.AvailableCredits, 0) - soniSirCredits;
