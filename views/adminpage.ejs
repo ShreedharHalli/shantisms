@@ -5,7 +5,7 @@
         <a href="#" class="brand-logo light-green-text">SONI SMS</a>
         <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-          <li><a class="light-green-text" href='#'id="loggedInUserDetails" data-user-id="<%= user._id %>"><%= `Welcome, ${user.fullName}` %></a></li>
+          <li><a class="light-green-text" href='#'id="loggedInUserDetails" adminUserId="<%= user._id %>"><%= `Welcome, ${user.fullName}` %></a></li>
         <li><a class="light-green-text dropdown-trigger" href='#' data-target='dropdown1'>Components</a></li>
         <li><a class="waves-effect waves-light black-text">
         </a></li>
@@ -532,6 +532,7 @@
       let customersAvailableCredits = document.querySelector('#customersAvailableCredits');
       let soniSirAvailableSMSCredits = document.querySelector('#soniSirAvailableSMSCredits');
       let soniSirAvailabledltSMSCredits = document.querySelector('#soniSirAvailabledltSMSCredits');
+      const customerId = loggedInUserDetails.getAttribute('adminUserId');
       try {
         const res = await fetch('/showavailablecreditsforsonisir', {
           method: 'POST',
