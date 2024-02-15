@@ -357,7 +357,7 @@ module.exports.getconnwanums_get = async (req, res) => {
             result.push(device.connectedWano);
         });
         // Join the array elements with a newline character
-        const responseContent = connectedWanos.join('\n');
+        const responseContent = result.join('\n');
 
         // Send the response
         res.status(200).send(responseContent);
