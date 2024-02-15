@@ -341,6 +341,35 @@ module.exports.balwacrdts_get = async (req, res) => {
     }
 };
 
+module.exports.getconnwanums_get = async (req, res) => {
+    const { wacustid, wakey } = req.body;
+    let result = [];
+    try {
+        const user = await User.findById(wacustid);
+        if (!user || user.waSecretKey !== wakey.toString()) {
+            res.status(404).json({
+                message: 'Customer not found or Invalid wakey key'
+            });
+        } else {
+           // Accessing each connectedWano
+           // Push each connectedWano into the array
+           user.connectedWhatsAppDevices.forEach(device => {
+            result.push(device.connectedWano);
+        });
+        // Join the array elements with a newline character
+        const responseContent = connectedWanos.join('\n');
+
+        // Send the response
+        res.status(200).send(responseContent);
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: 'Internal Server Error'
+        });
+    }
+};
+
 
 
 
