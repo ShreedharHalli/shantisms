@@ -701,6 +701,7 @@ app.all('/api/getwhmsgstatus', async (req, res) => {
 app.all('/api/iswaregistered', async (req, res) => {
   try {
     const wacustid = req.query.wacustid;
+    console.log(wacustid);
     const wanos = req.query.wanos;
       const results = [];
 
