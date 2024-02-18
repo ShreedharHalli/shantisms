@@ -404,7 +404,7 @@ app.post('/api/sendbulk', async (req, res) => {
   const fallBackMessage = req.query.fallbackmsg; // fallback
 
   // whatsapp variables
-  const whatsappCustId = req.query.whatsappcustid;
+  const whatsappCustId = req.query.wacustid;
   const senderWhatsappNo = req.query.fromnum;
 
   if (via === 'sms') {
@@ -422,10 +422,20 @@ app.post('/api/sendbulk', async (req, res) => {
               if (waKey === user.waSecretKey) {
               // const response = await sendBulksms(smsCustId, mobiles, message, tempid, senderid, idno, unicode, time, accusage)
               const response = await sendBulksms(user, tonums, message, tempid, idno, unicode, time, accusage, senderid, entityid)
+              res.setHeader('Cache-Control', 'no-cache');
+                          
+              // Set Date header to an old date
+              const oldDate = new Date('Tue, 1 Jan 2000 00:00:00 GMT');
+              res.setHeader('Date', oldDate.toUTCString());
               res.status(200).send({
                 response: response
               })
             } else {
+              res.setHeader('Cache-Control', 'no-cache');
+                          
+              // Set Date header to an old date
+              const oldDate = new Date('Tue, 1 Jan 2000 00:00:00 GMT');
+              res.setHeader('Date', oldDate.toUTCString());
               res.status(500).send({
                 message: "Invalid secret key"
               })
@@ -433,6 +443,11 @@ app.post('/api/sendbulk', async (req, res) => {
             }
           })
       } catch (error) {
+            res.setHeader('Cache-Control', 'no-cache');
+                          
+            // Set Date header to an old date
+            const oldDate = new Date('Tue, 1 Jan 2000 00:00:00 GMT');
+            res.setHeader('Date', oldDate.toUTCString());
         res.status(500).send({
           message: error.message
         })
@@ -461,7 +476,17 @@ app.post('/api/sendbulk', async (req, res) => {
                   })
                 }
               }
+              res.setHeader('Cache-Control', 'no-cache');
+                          
+              // Set Date header to an old date
+              const oldDate = new Date('Tue, 1 Jan 2000 00:00:00 GMT');
+              res.setHeader('Date', oldDate.toUTCString());
             } else {
+              res.setHeader('Cache-Control', 'no-cache');
+                          
+              // Set Date header to an old date
+              const oldDate = new Date('Tue, 1 Jan 2000 00:00:00 GMT');
+              res.setHeader('Date', oldDate.toUTCString());
               res.status(500).send({
                 message: "Inssufficient credits, Please top up your credits"
               })
@@ -469,6 +494,11 @@ app.post('/api/sendbulk', async (req, res) => {
           }
         });
     } catch (error) {
+            res.setHeader('Cache-Control', 'no-cache');
+                          
+            // Set Date header to an old date
+            const oldDate = new Date('Tue, 1 Jan 2000 00:00:00 GMT');
+            res.setHeader('Date', oldDate.toUTCString());
       console.log(error);
       if (error.message.includes('Cast to ObjectId')) {
         return res.status(404).json({ error: 'Invalid Customer ID' });
