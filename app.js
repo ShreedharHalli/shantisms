@@ -699,14 +699,11 @@ app.all('/api/getwhmsgstatus', async (req, res) => {
 
 
 app.all('/api/iswaregistered', async (req, res) => {
-  try {
-    const wacustid = req.query.wacustid;
-    console.log(wacustid);
+  const wacustid = req.query.wacustid;
     const wanos = req.query.wanos;
+  try {
       const results = [];
-
       const user = await User.findById(wacustid);
-
       if (!user) {
           // Handle case where user is not found
           res.status(404).json({
@@ -730,7 +727,7 @@ app.all('/api/iswaregistered', async (req, res) => {
               break; // Exit the loop after finding the connected device
           }
       }
-      // Set Cache-Control header to no-cache
+      //Set Cache-Control header to no-cache
         res.setHeader('Cache-Control', 'no-cache');
         
         // Set Date header to an old date
@@ -738,9 +735,12 @@ app.all('/api/iswaregistered', async (req, res) => {
         res.setHeader('Date', oldDate.toUTCString());
 
       res.status(200).json({
-          Response: results.join('\n')
+          // Response: results.join('\n')
+          Response: 'i m working'
       });
   } catch (error) {
+    console.log(error.lineNumber)
+    console.log(error.message);
       if (error.message.includes("Cast to ObjectId")) {
           res.status(404).json({
               status: false,
