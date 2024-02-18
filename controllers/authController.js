@@ -102,10 +102,10 @@ module.exports.logout_get = (req, res) => {
 module.exports.issuecreditsendpoint_post = async (req, res) => {
     let { customerid, credits } = req.body;
     try {
-            const soniSirDoc = await User.findOne({ _id: '659e94f92259ef5e6f262d4a' })
+            const soniSirDoc = await User.findOne({ _id: '65c97e5a1f433452b59de516' })
             if (soniSirDoc && soniSirDoc.AvailableCredits >=  credits) {
             const updatedCredits = await User.updateOne({ _id: customerid }, { $inc: { AvailableCredits: credits } });
-            const reduceCountOfSoniSir = await User.updateOne({ _id: '659e94f92259ef5e6f262d4a' }, { $inc: { AvailableCredits: -credits } });
+            const reduceCountOfSoniSir = await User.updateOne({ _id: '65c97e5a1f433452b59de516' }, { $inc: { AvailableCredits: -credits } });
             res.status(200).json(updatedCredits);
             } else {
                 res.status(404).json({ message: 'Insufficient Credits Available.' });
