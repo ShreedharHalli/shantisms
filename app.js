@@ -51,7 +51,7 @@ app.set('view engine', 'ejs');
 mongoose.connect(process.env.MONGODBURI).then(e => {
   server.listen(PORT);
   console.log('Mongodb connected and server listening on port ' + PORT);
-  // initiateAllWhatsappClients();
+  initiateAllWhatsappClients();
 })
   .catch(error => {
     console.log(error.message)
