@@ -19,8 +19,8 @@ router.post('/updatepass', authController.updatepass_post);
 router.post('/updatepasssonisir', authController.updatepasssonisir_post);
 router.post('/resetpass', authController.resetpass_post);
 router.post('/updatewasecretkey', authController.updatewasecretkey_post);
-router.get('/api/balwacrdts', authController.balwacrdts_get);
-router.get('/api/getconnwanums', authController.getconnwanums_get);
+router.all('/api/balwacrdts', authController.balwacrdts_get);
+router.all('/api/getconnwanums', authController.getconnwanums_get);
 
 
 module.exports = router;

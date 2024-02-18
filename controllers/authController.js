@@ -319,15 +319,27 @@ module.exports.updatewasecretkey_post = async (req, res) => {
 // GET AVAILABLE CREDITS THROUGH ENDPOINT
 
 module.exports.balwacrdts_get = async (req, res) => {
-    const { wacustid, wakey } = req.body;
+    const wacustid = req.query.wacustid;
+    const wakey = req.query.wakey;
+    // const { wacustid, wakey } = req.body;
     try {
         const user = await User.findById(wacustid);
 
         if (!user || user.waSecretKey !== wakey.toString()) {
+            res.setHeader('Cache-Control', 'no-cache');
+                          
+            // Set Date header to an old date
+            const oldDate = new Date('Tue, 1 Jan 2000 00:00:00 GMT');
+            res.setHeader('Date', oldDate.toUTCString());
             res.status(404).json({
                 message: 'Customer not found or Invalid wakey key'
             });
         } else {
+            res.setHeader('Cache-Control', 'no-cache');
+                          
+            // Set Date header to an old date
+            const oldDate = new Date('Tue, 1 Jan 2000 00:00:00 GMT');
+            res.setHeader('Date', oldDate.toUTCString());
             res.status(200).json(user.AvailableCredits);
         }
     } catch (error) {
@@ -336,13 +348,20 @@ module.exports.balwacrdts_get = async (req, res) => {
                 message: 'Invalid wacustid'
             });
         } else {
+            res.setHeader('Cache-Control', 'no-cache');
+                          
+            // Set Date header to an old date
+            const oldDate = new Date('Tue, 1 Jan 2000 00:00:00 GMT');
+            res.setHeader('Date', oldDate.toUTCString());
             res.status(400).json(error.message);
         }
     }
 };
 
 module.exports.getconnwanums_get = async (req, res) => {
-    const { wacustid, wakey } = req.body;
+    const wacustid = req.query.wacustid;
+    const wakey = req.query.wakey;
+    // const { wacustid, wakey } = req.body;
     let result = [];
     try {
         const user = await User.findById(wacustid);
@@ -358,7 +377,12 @@ module.exports.getconnwanums_get = async (req, res) => {
         });
         // Join the array elements with a newline character
         const responseContent = result.join('\n');
-
+        // Set Cache-Control header to no-cache
+        res.setHeader('Cache-Control', 'no-cache');
+                          
+        // Set Date header to an old date
+        const oldDate = new Date('Tue, 1 Jan 2000 00:00:00 GMT');
+        res.setHeader('Date', oldDate.toUTCString());
         // Send the response
         res.status(200).send(responseContent);
         }

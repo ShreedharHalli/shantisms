@@ -51,7 +51,7 @@ app.set('view engine', 'ejs');
 mongoose.connect(process.env.MONGODBURI).then(e => {
   server.listen(PORT);
   console.log('Mongodb connected and server listening on port ' + PORT);
-  initiateAllWhatsappClients();
+  // initiateAllWhatsappClients();
 })
   .catch(error => {
     console.log(error.message)
@@ -382,30 +382,30 @@ app.post('/api/sendmessage', async (req, res) => {
 
 
 app.post('/api/sendbulk', async (req, res) => {
-  const tonums = req.body.tonums;
-  const message = req.body.message;
-  const smsCustId = req.body.smscustid;
-  const waKey = req.body.wakey;
-  const entityid = req.body.entityid;
-  const senderwano = req.body.senderwano;
-  const messageType = req.body.messagetype.toLowerCase();
-  const via = req.body.via.toLowerCase() || 'whatsapp';
+  const tonums = req.query.tonums;
+  const message = req.query.message;
+  const smsCustId = req.query.smscustid;
+  const waKey = req.query.wakey;
+  const entityid = req.query.entityid;
+  const senderwano = req.query.senderwano;
+  const messageType = req.query.messagetype.toLowerCase();
+  const via = req.query.via.toLowerCase() || 'whatsapp';
   const file = req.files && req.files.file ? req.files.file : null;
   const payloadCount = convertStringToArray(tonums).length;
   const fileName = req.files && req.files.file.name ? req.files.file.name : null;
   // sms variables
-  const tempid = req.body.tempid;
-  const senderid = req.body.senderid; // when fal msg is given
-  const idno = req.body.idno;
-  const unicode = req.body.unicode; //language
-  const time = req.body.time;
-  const accusage = req.body.accusage;
-  const fileURL = req.body.fileurl;
-  const fallBackMessage = req.body.fallbackmsg; // fallback
+  const tempid = req.query.tempid;
+  const senderid = req.query.senderid; // when fal msg is given
+  const idno = req.query.idno;
+  const unicode = req.query.unicode; //language
+  const time = req.query.time;
+  const accusage = req.query.accusage;
+  const fileURL = req.query.fileurl;
+  const fallBackMessage = req.query.fallbackmsg; // fallback
 
   // whatsapp variables
-  const whatsappCustId = req.body.whatsappcustid;
-  const senderWhatsappNo = req.body.fromnum;
+  const whatsappCustId = req.query.whatsappcustid;
+  const senderWhatsappNo = req.query.fromnum;
 
   if (via === 'sms') {
     if (message.length > 0) {
@@ -489,6 +489,7 @@ async function sendbulkWhatsapp(clientObj, tonums, message, messageType, file, f
     let results = [];
     let isFileFormatSupported = false;
     let isURLFileFormatSupported = false;
+    let filePath = '';
 
     if (file) {
       filePath = await manageUploadedFile('create', file); // TODO: CHECK TMP FOLDER
@@ -610,9 +611,10 @@ async function sendBulksms(user, tonums, message, tempid, idno, unicode, time, a
 
 
 
-app.get('/api/getwhmsgstatus', async (req, res) => {
+app.all('/api/getwhmsgstatus', async (req, res) => {
   try {
-      const { wacustid, wapostids } = req.body;
+      const wacustid = req.query.wacustid;
+      const wapostids = req.query.wapostids;
       const wapostidsArr = wapostids.split(', ');
       const results = [];
 
@@ -640,7 +642,12 @@ app.get('/api/getwhmsgstatus', async (req, res) => {
                   results.push(`Invalid wapostid: ${wapostid}`);
               }
           }
-          res.status(200).json({
+              res.setHeader('Cache-Control', 'no-cache');
+    
+              // Set Date header to an old date
+              const oldDate = new Date('Tue, 1 Jan 2000 00:00:00 GMT');
+              res.setHeader('Date', oldDate.toUTCString());
+              res.status(200).json({
               Response: results.join('\n')
           });
       }
@@ -661,9 +668,10 @@ app.get('/api/getwhmsgstatus', async (req, res) => {
 
 
 
-app.get('/api/iswaregistered', async (req, res) => {
+app.all('/api/iswaregistered', async (req, res) => {
   try {
-      const { wacustid, wanos } = req.body;
+    const wacustid = req.query.wacustid;
+    const wanos = req.query.wanos;
       const results = [];
 
       const user = await User.findById(wacustid);
@@ -691,6 +699,12 @@ app.get('/api/iswaregistered', async (req, res) => {
               break; // Exit the loop after finding the connected device
           }
       }
+      // Set Cache-Control header to no-cache
+        res.setHeader('Cache-Control', 'no-cache');
+        
+        // Set Date header to an old date
+        const oldDate = new Date('Tue, 1 Jan 2000 00:00:00 GMT');
+        res.setHeader('Date', oldDate.toUTCString());
 
       res.status(200).json({
           Response: results.join('\n')
@@ -711,9 +725,12 @@ app.get('/api/iswaregistered', async (req, res) => {
 });
 
 
-app.get('/api/getgrpids', async (req, res) => {
+app.all('/api/getgrpids', async (req, res) => {
   try {
-      const { wacustid, wakey, extrctgrpidfrmnum } = req.body;
+    const wacustid = req.query.wacustid;
+    const wakey = req.query.wakey;
+    const extrctgrpidfrmnum = req.query.extrctgrpidfrmnum;
+      // const { wacustid, wakey, extrctgrpidfrmnum } = req.body;
       // check if the number starts with 91 and if not attach it.
       const fromNum = extrctgrpidfrmnum.toString().startsWith("91") ? extrctgrpidfrmnum : "91" + extrctgrpidfrmnum;
       let results = [];
@@ -744,11 +761,23 @@ app.get('/api/getgrpids', async (req, res) => {
                           groups.forEach((group, i) => {
                               results.push(`Group Name: ${group.name}, ID: ${group.id._serialized}`);
                           });
+                          // Set Cache-Control header to no-cache
+                          res.setHeader('Cache-Control', 'no-cache');
+                          
+                          // Set Date header to an old date
+                          const oldDate = new Date('Tue, 1 Jan 2000 00:00:00 GMT');
+                          res.setHeader('Date', oldDate.toUTCString());
                           res.status(200).json({
                               results: results.join('\n')
                           });
                       }
                   } else {
+                      // Set Cache-Control header to no-cache
+                      res.setHeader('Cache-Control', 'no-cache');
+                      
+                      // Set Date header to an old date
+                      const oldDate = new Date('Tue, 1 Jan 2000 00:00:00 GMT');
+                      res.setHeader('Date', oldDate.toUTCString());
                       res.status(404).json({
                           status: false,
                           response: "Invalid Number"
@@ -778,37 +807,6 @@ app.get('/api/getgrpids', async (req, res) => {
       }
   }
 });
-
-
-/* 
-
-app.get('/automation/missedcallalert/*', async (req, res) => {
-  const phoneNumber = req.url.replace('/automation/missedcallalert/', '');
-  const phoneWithoutSymbol = phoneNumber.startsWith('+') ? phoneNumber.substring(1) : phoneNumber;
-  console.log(phoneWithoutSymbol);
-  try {
-  const id = '65be095699b95324ad6794a0-xMiIn9';
-  const clientObj = sessionMap.get(id);
-  const client = clientObj.client;
-    const state = await client.getState();
-    let message = ''
-    message += 'Dear Sir, ' + '\n';
-    message += 'Thank you for calling our Relationship Manager. Shreedhar' +  '\n';
-    message += 'We apologize that he missed your call; he must be busy attending to valued customers, just like you.' + '\n';
-    message += 'Rest assured, our Relationship Manager will call you back within a short period of time.' + '\n';
-    message += 'Senior Relationship Manager : Mr. Sudhir Meghache : 91 78878 92244' + '\n';
-    if (state === 'CONNECTED') {
-      await client.sendMessage(`${phoneWithoutSymbol}@c.us`, message).then(async (response) => {
-      }).catch(err => {
-        console.log(err);
-      });
-    }
-  } catch (error) {
-    console.log(error.message);
-  }
-});
- */
-
 
 
 
