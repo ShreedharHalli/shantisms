@@ -735,8 +735,7 @@ app.all('/api/iswaregistered', async (req, res) => {
         res.setHeader('Date', oldDate.toUTCString());
 
       res.status(200).json({
-          // Response: results.join('\n')
-          Response: 'i m working'
+          Response: results.join('\n')
       });
   } catch (error) {
     console.log(error.lineNumber)
