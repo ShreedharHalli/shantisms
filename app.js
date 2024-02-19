@@ -382,30 +382,30 @@ app.post('/api/sendmessage', async (req, res) => {
 
 
 app.post('/api/sendbulk', async (req, res) => {
-  const tonums = req.query.tonums;
-  const message = req.query.message;
-  const smsCustId = req.query.smscustid;
-  const waKey = req.query.wakey;
-  const entityid = req.query.entityid;
-  const senderwano = req.query.senderwano;
-  const messageType = req.query.messagetype.toLowerCase();
-  const via = req.query.via.toLowerCase() || 'whatsapp';
+  const tonums = req.body.tonums;
+  const message = req.body.message;
+  const smsCustId = req.body.smscustid;
+  const waKey = req.body.wakey;
+  const entityid = req.body.entityid;
+  const senderwano = req.body.senderwano;
+  const messageType = req.body.messagetype.toLowerCase();
+  const via = req.body.via.toLowerCase() || 'whatsapp';
   const file = req.files && req.files.file ? req.files.file : null;
   const payloadCount = convertStringToArray(tonums).length;
   const fileName = req.files && req.files.file.name ? req.files.file.name : null;
   // sms variables
-  const tempid = req.query.tempid;
-  const senderid = req.query.senderid; // when fal msg is given
-  const idno = req.query.idno;
-  const unicode = req.query.unicode; //language
-  const time = req.query.time;
-  const accusage = req.query.accusage;
-  const fileURL = req.query.fileurl;
-  const fallBackMessage = req.query.fallbackmsg; // fallback
+  const tempid = req.body.tempid;
+  const senderid = req.body.senderid; // when fal msg is given
+  const idno = req.body.idno;
+  const unicode = req.body.unicode; //language
+  const time = req.body.time;
+  const accusage = req.body.accusage;
+  const fileURL = req.body.fileurl;
+  const fallBackMessage = req.body.fallbackmsg; // fallback
 
   // whatsapp variables
-  const whatsappCustId = req.query.wacustid;
-  const senderWhatsappNo = req.query.fromnum;
+  const whatsappCustId = req.body.wacustid;
+  const senderWhatsappNo = req.body.fromnum;
 
   if (via === 'sms') {
     if (message.length > 0) {
