@@ -494,11 +494,6 @@ app.post('/api/sendbulk', async (req, res) => {
           }
         });
     } catch (error) {
-            res.setHeader('Cache-Control', 'no-cache');
-                          
-            // Set Date header to an old date
-            const oldDate = new Date('Tue, 1 Jan 2000 00:00:00 GMT');
-            res.setHeader('Date', oldDate.toUTCString());
       console.log(error);
       if (error.message.includes('Cast to ObjectId')) {
         return res.status(404).json({ error: 'Invalid Customer ID' });
