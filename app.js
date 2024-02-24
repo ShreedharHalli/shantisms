@@ -235,6 +235,7 @@ async function initiateAllWhatsappClients() {
     for (device of connectedDevices) { // CONNECTED DEVICES LOOP
       try {
         const clientId = device.client;
+        console.log(`current client id is ${clientId}`);
         const client = whatsappFactoryFunction(clientId);
         const customerId = user._id;
 
