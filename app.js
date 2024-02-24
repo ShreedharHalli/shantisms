@@ -247,6 +247,11 @@ async function initiateAllWhatsappClients() {
           });
         });
 
+        client.on('auth_failure', (msg) => {
+          console.log('Authentication failure', msg);
+
+        });
+
         client.on('message_ack', async (msg, ack) => {
           // console.log(`this is ack number ${ack} and message is ${JSON.stringify(msg)}`);
           // Handle message acknowledgment
@@ -315,10 +320,7 @@ async function initiateAllWhatsappClients() {
             console.log(`Folder '${folderName}' does not exist`);
           }
         });
-        client.on('auth_failure', (msg) => {
-          console.error('Authentication failure', msg);
-
-        });
+        
         await client.initialize();
       } catch (error) {
         console.log(error);
