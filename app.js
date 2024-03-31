@@ -253,8 +253,7 @@ async function initiateAllWhatsappClients() {
 
         });
 
-        const wweb = await client.getWWebVersion();
-        console.log(`Current Web version is ${wweb}`);
+        
 
         client.on('message_ack', async (msg, ack) => {
           // console.log(`this is ack number ${ack} and message is ${JSON.stringify(msg)}`);
