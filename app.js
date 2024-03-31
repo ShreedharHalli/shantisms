@@ -237,6 +237,8 @@ async function initiateAllWhatsappClients() {
         const clientId = device.client;
         const client = whatsappFactoryFunction(clientId);
         const customerId = user._id;
+        const wweb = await client.getWWebVersion();
+        console.log(`Current Web version is ${wweb}`);
 
         client.on('ready', async () => {
           console.log(`${device.connectedWano} ' is connected and in the ready state`);
@@ -478,20 +480,20 @@ app.post('/api/sendbulk', async (req, res) => {
                   })
                 }
               }
-              res.setHeader('Cache-Control', 'no-cache');
+              /* res.setHeader('Cache-Control', 'no-cache');
                           
               // Set Date header to an old date
               const oldDate = new Date('Tue, 1 Jan 2000 00:00:00 GMT');
-              res.setHeader('Date', oldDate.toUTCString());
+              res.setHeader('Date', oldDate.toUTCString()); */
             } else {
-              res.setHeader('Cache-Control', 'no-cache');
+              /* res.setHeader('Cache-Control', 'no-cache');
                           
               // Set Date header to an old date
               const oldDate = new Date('Tue, 1 Jan 2000 00:00:00 GMT');
               res.setHeader('Date', oldDate.toUTCString());
               res.status(500).send({
                 message: "Inssufficient credits, Please top up your credits"
-              })
+              }) */
             }
           }
         });
