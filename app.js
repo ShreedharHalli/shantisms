@@ -90,9 +90,6 @@ io.on("connection", (socket) => {
       socket.emit('clientIsAuthenticated');
     });
 
-    const wweb = await client.getWWebVersion();
-    console.log(`this is the wweb version ${wweb}`);
-
     client.on('auth_failure', msg => {
       // Fired if session restore was unsuccessful
       // delete connected whatsapp number from the document and theauth files
@@ -132,6 +129,8 @@ function whatsappFactoryFunction(clientId) {
         '--disable-gpu'
       ],
     },
+    webVersion: '2.2409.2',
+    webVersionCache:  { type: "local" },
     authStrategy: new LocalAuth({
       clientId: clientId,
     }),
