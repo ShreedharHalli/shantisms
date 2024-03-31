@@ -118,7 +118,7 @@ function whatsappFactoryFunction(clientId) {
     qrMaxRetries: 10, // keep it outside of the puppeteer object
     puppeteer: {
       executablePath: '/usr/bin/google-chrome-stable',
-      headless: false,
+      headless: true,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
