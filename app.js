@@ -112,7 +112,7 @@ io.on("connection", (socket) => {
 
 
 // Function to create a new WhatsApp client instance
-async function whatsappFactoryFunction(clientId) {
+function whatsappFactoryFunction(clientId) {
   const client = new Client({
     restartOnAuthFail: true,
     qrMaxRetries: 10, // keep it outside of the puppeteer object
