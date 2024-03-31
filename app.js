@@ -129,8 +129,6 @@ async function whatsappFactoryFunction(clientId) {
         '--disable-gpu'
       ],
     },
-    webVersion: '2.2409.2',
-    webVersionCache:  { type: "local" },
     authStrategy: new LocalAuth({
       clientId: clientId,
     }),
