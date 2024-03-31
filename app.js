@@ -118,7 +118,7 @@ function whatsappFactoryFunction(clientId) {
     qrMaxRetries: 10, // keep it outside of the puppeteer object
     puppeteer: {
       executablePath: '/usr/bin/google-chrome-stable',
-      headless: true,
+      headless: false,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -129,17 +129,44 @@ function whatsappFactoryFunction(clientId) {
         '--disable-gpu'
       ],
     },
-    webVersion: '2.2409.2',
-    webVersionCache:  { type: "local" },
     authStrategy: new LocalAuth({
       clientId: clientId,
     }),
+    webVersion: '2.2409.2',
+    webVersionCache: {
+       type: 'remote',
+       remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2409.2.html'
+   }
   });
 
   
 
   return client;  // Return the client instance, not the Client class
 };
+
+
+/* 
+const { Client, LinkingMethod, LocalAuth} = require('whatsapp-web.js');
+const client = new Client(
+    {
+        linkingMethod:  new LinkingMethod({
+            phone: {
+                number: "+<COUNTRY CODE><PHONE NUMBER>"
+            }
+        }),
+        puppeteer: {
+            args: ['--no-sandbox'],
+        },
+    }
+);
+client.on('code', (code) => {
+    console.log('CODE RECEIVED', code);
+});
+client.on('ready', () => {
+    console.log('Client is ready!');
+});
+client.initialize();
+*/
 
 
 async function insertClientDetailstoCustDoc(customerId, connectedWhatsappNo, clientId) {
