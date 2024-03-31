@@ -112,7 +112,7 @@ io.on("connection", (socket) => {
 
 
 // Function to create a new WhatsApp client instance
-function whatsappFactoryFunction(clientId) {
+async function whatsappFactoryFunction(clientId) {
   const client = new Client({
     restartOnAuthFail: true,
     qrMaxRetries: 10, // keep it outside of the puppeteer object
@@ -135,6 +135,9 @@ function whatsappFactoryFunction(clientId) {
       clientId: clientId,
     }),
   });
+
+  const wweb = await client.getWWebVersion();
+  console.log(`Current Web version is ${wweb}`);
 
   return client;  // Return the client instance, not the Client class
 };
