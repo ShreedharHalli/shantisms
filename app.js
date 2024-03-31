@@ -136,8 +136,7 @@ async function whatsappFactoryFunction(clientId) {
     }),
   });
 
-  const wweb = await client.getWWebVersion();
-  console.log(`Current Web version is ${wweb}`);
+  
 
   return client;  // Return the client instance, not the Client class
 };
@@ -255,6 +254,9 @@ async function initiateAllWhatsappClients() {
           console.log('Authentication failure', msg);
 
         });
+
+        const wweb = await client.getWWebVersion();
+        console.log(`Current Web version is ${wweb}`);
 
         client.on('message_ack', async (msg, ack) => {
           // console.log(`this is ack number ${ack} and message is ${JSON.stringify(msg)}`);
