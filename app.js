@@ -129,6 +129,8 @@ function whatsappFactoryFunction(clientId) {
         '--disable-gpu'
       ],
     },
+    webVersion: '2.2409.2',
+    webVersionCache:  { type: "local" },
     authStrategy: new LocalAuth({
       clientId: clientId,
     }),
@@ -237,8 +239,6 @@ async function initiateAllWhatsappClients() {
         const clientId = device.client;
         const client = whatsappFactoryFunction(clientId);
         const customerId = user._id;
-        const wweb = await client.getWWebVersion();
-        console.log(`Current Web version is ${wweb}`);
 
         client.on('ready', async () => {
           console.log(`${device.connectedWano} ' is connected and in the ready state`);
