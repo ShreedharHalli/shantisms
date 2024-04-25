@@ -176,8 +176,9 @@ async function insertClientDetailstoCustDoc(customerId, connectedWhatsappNo, cli
         console.log('Customer doc not found in database');
         return;
       } else {
-        // waSecretKey: generateRandomSecretKey()
-        await User.updateOne({ _id: customerId }, { $set: { waSecretKey: generateRandomSecretKey() } });
+        // PREVENT EVERY TIME CHANGING THE WA SECRET KEY.
+        let secretKey = user.waSecretKey === "-" ? generateRandomSecretKey() : user.waSecretKey; 
+        await User.updateOne({ _id: customerId }, { $set: { waSecretKey: secretKey } });
         const sessionObj = { client: clientId, connectedWano: connectedWhatsappNo };
         User.updateOne({ _id: customerId }, { $push: { connectedWhatsAppDevices: sessionObj } })
           .then(updatedUser => {
