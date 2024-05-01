@@ -580,35 +580,35 @@ async function sendbulkWhatsapp(clientObj, tonums, message, messageType, file, f
                 await client.sendMessage(mobNoAsUID, message).then(async (response) => {
                   const messageId = response._data.id._serialized;
                   MessageLog.create({ custName: user.fullName, custId: user._id, sentTo: number, content: message, media: false, messageId: messageId, status: 'sent', sonisirId: idno, sentFrom: senderWhatsappNo })
-                  results.push(`wh, sent, success, ${messageId}, ${idno},${number}, Via: 'Whatsapp', ${senderWhatsappNo}`);
+                  results.push(`wh,sent,success,${messageId},${idno},${number},'Whatsapp',${senderWhatsappNo}`);
                   whatsappMsgSentCount++
                 }).catch(err => {
                   console.log(err);
-                  results.push(`wh, failed, failed, ${err}, ${idno},${number},`);
+                  results.push(`wh,failed,failed,${err},${idno},${number},`);
                 });
               } else if (messageType === 'file') {
                 const media = MessageMedia.fromFilePath(filePath);
                 await client.sendMessage(mobNoAsUID, media, { caption: message }).then(async (response) => {
                   const messageId = response._data.id._serialized;
                   MessageLog.create({ custName: user.fullName, custId: user._id, sentTo: number, content: message, media: true, messageId: messageId, status: 'sent', sonisirId: idno, sentFrom: senderWhatsappNo })
-                  results.push(`wh, sent, success, ${messageId}, ${idno}, ${number}, Via: 'Whatsapp', ${senderWhatsappNo}`);
+                  results.push(`wh,sent,success,${messageId},${idno},${number},'Whatsapp',${senderWhatsappNo}`);
                   whatsappMsgSentCount++
                   await manageUploadedFile('delete', file);
                 }).catch(err => {
                   console.log(err);
-                  results.push(`wh, failed, failed, ${err}, ${idno},${number}, ${senderWhatsappNo}`);
+                  results.push(`wh,failed,failed,${err},${idno},${number},${senderWhatsappNo}`);
                 });
               } else if (messageType === 'url') {
                 const media = MessageMedia.fromFilePath(filePath);
                 await client.sendMessage(mobNoAsUID, media, { caption: message }).then(async (response) => {
                   const messageId = response._data.id._serialized;
                   MessageLog.create({ custName: user.fullName, custId: user._id, sentTo: number, content: message, media: true, messageId: messageId, status: 'sent', sonisirId: idno, sentFrom: senderWhatsappNo })
-                  results.push(`wh, sent, success, ${messageId}, ${idno}, ${number}, Via: 'Whatsapp', ${senderWhatsappNo}`);
+                  results.push(`wh,sent,success,${messageId},${idno},${number},'Whatsapp',${senderWhatsappNo}`);
                   whatsappMsgSentCount++
                   await downloadFileFromUrl(fileURL, 'delete');
                 }).catch(err => {
                   console.log(err);
-                  results.push(`wh, failed, failed, ${err}, ${idno},${number}, ${senderWhatsappNo}`);
+                  results.push(`wh,failed,failed,${err},${idno},${number},${senderWhatsappNo}`);
                 });
               }
               let updatedWhatsappCount = user.AvailableCredits - whatsappMsgSentCount;
