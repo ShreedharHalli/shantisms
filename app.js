@@ -518,14 +518,14 @@ app.post('/api/sendbulk', async (req, res) => {
               const oldDate = new Date('Tue, 1 Jan 2000 00:00:00 GMT');
               res.setHeader('Date', oldDate.toUTCString()); */
             } else {
-              /* res.setHeader('Cache-Control', 'no-cache');
+              res.setHeader('Cache-Control', 'no-cache');
                           
               // Set Date header to an old date
               const oldDate = new Date('Tue, 1 Jan 2000 00:00:00 GMT');
               res.setHeader('Date', oldDate.toUTCString());
               res.status(500).send({
                 message: "Inssufficient credits, Please top up your credits"
-              }) */
+              })
             }
           }
         });
